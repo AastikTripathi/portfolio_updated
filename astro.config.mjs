@@ -8,7 +8,7 @@ import markdoc from '@astrojs/markdoc';
 const isDev = process.env.NODE_ENV !== 'production';
 
 export default defineConfig({
-  site: 'https://saadhassan.in',
+  site: 'https://aastiktripathi.pages.dev',
   output: 'static',
   adapter: isDev ? undefined : cloudflare({ imageService: 'passthrough' }),
   integrations: [

@@ -1,0 +1,80 @@
+---
+// src/pages/blogs/[...slug].astro
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SEOJsonLd from '../../components/SEOJsonLd.astro';
+
+export async function getStaticPaths() {
+  const blogPosts = await getCollection('blogs');
+  return blogPosts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+---
+
+<Layout
+  title={`${post.data.title} | Blog - Aastik Tripathi`}
+  description={post.data.summary || post.data.title}
+>
+  <SEOJsonLd
+    type="article"
+    title={post.data.title}
+    description={post.data.summary || post.data.title}
+    url={Astro.url.href}
+  />
+
+  <div class="min-h-screen bg-[#0d0f14] text-[#e6e8ec] py-12 sm:py-16">
+    <div class="max-w-4xl px-4 mx-auto sm:px-6 space-y-8">
+
+      <!-- Back link -->
+      <a href="/blogs" class="inline-flex items-center gap-2 font-mono text-xs text-[#e5b842] hover:underline font-bold">
+        ← BACK TO ALL ARTICLES
+      </a>
+
+      <!-- Article Header Card with Solid Block Shadow -->
+      <div class="p-6 sm:p-10 bg-[#14171f] border-2 sm:border-[3px] border-[#2e3545] rounded-2xl sm:rounded-3xl shadow-[6px_6px_0px_0px_#e5b842] space-y-4">
+        <div class="flex flex-wrap items-center gap-3 font-mono text-xs text-neutral-400 border-b border-[#2e3545] pb-4">
+          <span class="text-[#e5b842] font-bold">
+            {new Date(post.data.publishDate).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+          </span>
+          <span>•</span>
+          <span>{post.data.readingTime}</span>
+          <span>•</span>
+          <span>By {post.data.author}</span>
+        </div>
+
+        <h1 class="hero-heading text-[#e6e8ec]">
+          {post.data.title}
+        </h1>
+
+        {post.data.summary && (
+          <p class="text-sm sm:text-base font-mono text-neutral-300 leading-relaxed pt-2">
+            {post.data.summary}
+          </p>
+        )}
+
+        {post.data.tags && post.data.tags.length > 0 && (
+          <div class="flex flex-wrap gap-2 pt-2">
+            {post.data.tags.map((tag) => (
+              <span class="px-2.5 py-1 bg-[#1a1e28] border border-[#2e3545] text-neutral-300 font-mono text-xs rounded shadow-[1px_1px_0px_#e5b842]">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <!-- Article Markdown Content with Solid Block Shadow -->
+      <div class="p-6 sm:p-10 bg-[#14171f] border-2 sm:border-[3px] border-[#2e3545] rounded-2xl sm:rounded-3xl shadow-[5px_5px_0px_0px_#e5b842]">
+        <article class="markdown-content">
+          <Content />
+        </article>
+      </div>
+
+    </div>
+  </div>
+</Layout>

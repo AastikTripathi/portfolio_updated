@@ -1,0 +1,39 @@
+---
+title: Scaling a High-Concurrency Fintech Platform to 100K Active Users
+subtitle: Redesigning state persistence and API gateways for financial transaction integrity under peak volatility.
+clientOrProject: Apex Financial Technologies
+role: Principal Systems Engineer
+timeline: 4 Months (Q3-Q4 2024)
+summary: Re-architected a legacy monolith into modular event-driven microservices, reducing p99 latency by 72% and eliminating transaction race conditions during market opens.
+impactHighlights:
+  - 72% reduction in p99 API latency (from 420ms to 118ms)
+  - 99.999% transaction reliability across $14M in daily volume
+  - Zero database deadlocks recorded across high-volume market opens
+techStack:
+  - Node.js
+  - PostgreSQL
+  - Redis Cluster
+  - RabbitMQ
+  - Docker
+  - AWS ECS
+featured: true
+publishDate: 2024-12-01
+---
+
+## The Challenge
+
+The client’s existing architecture suffered from connection pool exhaustion and transaction lock contention during the first 15 minutes of every trading session. With daily trade volume expanding by 300% year-over-year, customer drop-offs and order synchronization delays were jeopardizing critical partnerships.
+
+## Architectural Approach
+
+We restructured the order routing pipeline using an idempotent message envelope pattern. Rather than writing directly to PostgreSQL synchronously, incoming orders are acknowledged instantly into an in-memory Redis ledger backed by append-only persistence.
+
+### Key Engineering Pillars
+
+1. **Optimistic Concurrency Controls**: Eliminated row-level exclusive locks in favor of atomic versioning checks.
+2. **Distributed Queue Sharding**: Split the order processing queues across geographic shards to minimize cross-region latency.
+3. **Automated Dead-Letter Recovery**: Implemented self-healing replay mechanisms for transient network failures.
+
+## Tangible Impact & Outcomes
+
+The newly deployed services processed the highest trading day in the company’s history with a steady 118ms average latency, handling over 2,400 concurrent writes/sec without dropping a single event.

@@ -3,7 +3,6 @@
 import '../global.css';
 import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
-import { ClientRouter } from 'astro:transitions';
 
 interface Props {
     title: string;
@@ -15,7 +14,7 @@ interface Props {
 
 const {
     title,
-    description = "Explore advanced mathematics, Olympiad proof archives, and competition problems from IMO, Putnam, AIME, ISI, CMI, JEE, HMMT, RMO, INMO, and more.",
+    description = "Aastik Tripathi - Full Stack Engineer, Systems Architect & Creative Technologist. Portfolio, Case Studies, Projects, and Career Journey.",
     canonicalURL = Astro.url.href.split('?')[0],
     ogImage = "/favicon.svg",
     ogType = "website"
@@ -23,7 +22,7 @@ const {
 ---
 
 <!doctype html>
-<html lang="en" class="bg-[#f5f5f2] text-[#2a2a2a] selection:bg-[#ebef70] selection:text-[#2a2a2a]">
+<html lang="en" class="bg-[#0f1115] text-[#e6e8ec] selection:bg-[#e5b842] selection:text-[#0f1115]">
     <head>
        <meta charset="UTF-8" />
        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -32,160 +31,72 @@ const {
 
        <title>{title}</title>
        <meta name="description" content={description} />
-       <meta name="author" content="Saad Hassan" />
+       <meta name="author" content="Aastik Tripathi" />
        <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-       <meta name="keywords" content="Olympiad Mathematics, IMO, INMO, RMO, ISI Entrance, CMI Entrance, JEE Advanced, Putnam Competition, AIME, HMMT, Invariance Principle, Extremal Principle, Monovariants, Generating Functions, Saad Hassan, deMath" />
-       <meta name="theme-color" content="#ebef70" />
+       <meta name="theme-color" content="#e5b842" />
 
        <!-- Open Graph / Facebook -->
        <meta property="og:type" content={ogType} />
-       <meta property="og:site_name" content="deMath" />
+       <meta property="og:site_name" content="Aastik Tripathi - Portfolio" />
        <meta property="og:locale" content="en_US" />
        <meta property="og:url" content={canonicalURL} />
        <meta property="og:title" content={title} />
        <meta property="og:description" content={description} />
-       <meta property="og:image" content={ogImage.startsWith('http') ? ogImage : `https://saadhassan.in${ogImage}`} />
+       <meta property="og:image" content={ogImage} />
 
        <!-- Twitter -->
        <meta property="twitter:card" content="summary_large_image" />
        <meta property="twitter:url" content={canonicalURL} />
        <meta property="twitter:title" content={title} />
        <meta property="twitter:description" content={description} />
-       <meta property="twitter:image" content={ogImage.startsWith('http') ? ogImage : `https://saadhassan.in${ogImage}`} />
-
+       <meta property="twitter:image" content={ogImage} />
 
        <link rel="preconnect" href="https://fonts.googleapis.com">
        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-       <!-- KaTeX for math formulas -->
-       <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/katex.min.css" crossorigin="anonymous" />
-       <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/katex.min.js" crossorigin="anonymous"></script>
-       <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.18/dist/contrib/auto-render.min.js" crossorigin="anonymous"
-          onload="renderMathInElement(document.body, {
-             delimiters: [
-                {left: '$$', right: '$$', display: true},
-                {left: '$', right: '$', display: false},
-                {left: '\\(', right: '\\)', display: false},
-                {left: '\\[', right: '\\]', display: true}
-             ],
-             throwOnError: false
-          });"
-       ></script>
-
-       <!-- TikZJax for LaTeX TikZ vector diagrams -->
-       <link rel="stylesheet" href="https://tikzjax.com/v1/fonts.css">
-       <script defer src="https://tikzjax.com/v1/tikzjax.js"></script>
+       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     </head>
-    <body class="min-h-screen antialiased flex flex-col justify-between font-sans">
-       <div class="flex flex-col flex-grow">
+    <body class="min-h-screen antialiased flex flex-col justify-between font-sans bg-[#0f1115] text-[#e6e8ec]">
+       <div class="flex flex-col flex-grow relative">
           <!-- ⚡ Global Navbar Hook -->
           <Navbar />
 
-          <main class="flex-grow">
+          <main class="flex-grow relative z-10">
              <slot />
           </main>
        </div>
 
        <Footer />
+
+       <script>
+         // Global scroll-reveal via IntersectionObserver
+         function initScrollReveal() {
+           const elements = document.querySelectorAll('[data-reveal]:not(.in-view)');
+           if (!elements.length) return;
+
+           const observer = new IntersectionObserver(
+             (entries) => {
+               entries.forEach((entry) => {
+                 if (entry.isIntersecting) {
+                   const delay = entry.target.getAttribute('data-reveal-delay');
+                   if (delay) {
+                     setTimeout(() => {
+                       entry.target.classList.add('in-view');
+                     }, parseInt(delay, 10));
+                   } else {
+                     entry.target.classList.add('in-view');
+                   }
+                   observer.unobserve(entry.target);
+                 }
+               });
+             },
+             { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+           );
+
+           elements.forEach((el) => observer.observe(el));
+         }
+
+         initScrollReveal();
+         document.addEventListener('astro:page-load', initScrollReveal);
+       </script>
     </body>
 </html>
-
-<style is:global>
-  /* TikZJax SVG container layout styling */
-  .tikz-diagram-wrapper svg,
-  .tikz-canvas svg {
-    display: block;
-    margin: 0 auto;
-    max-width: 100%;
-    height: auto;
-    overflow: visible;
-  }
-</style>
-
-<script is:inline>
-  function fixTikzSubscripts() {
-    document.querySelectorAll('.tikz-canvas svg text tspan[dy], .tikz-diagram-wrapper svg text tspan[dy]').forEach(function(tspan) {
-      if (tspan.dataset.dyFixed) return;
-      tspan.dataset.dyFixed = '1';
-      var val = parseFloat(tspan.getAttribute('dy'));
-      if (!isNaN(val)) {
-        tspan.setAttribute('dy', -val);
-      }
-    });
-  }
-
-  // Observe TikZJax rendering and fix tspan dy offsets
-  var _tikzObs = new MutationObserver(function() {
-    fixTikzSubscripts();
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
-    fixTikzSubscripts();
-    _tikzObs.observe(document.body, { childList: true, subtree: true });
-    [100, 300, 800, 1500, 3000].forEach(function(ms) {
-      setTimeout(fixTikzSubscripts, ms);
-    });
-  });
-</script>
-
-<script>
-  // Global scroll-reveal via IntersectionObserver
-  function initScrollReveal() {
-    const elements = document.querySelectorAll('[data-reveal]:not(.in-view)');
-    if (!elements.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement;
-            const delay = parseInt(el.dataset.revealDelay || '0', 10);
-            setTimeout(() => el.classList.add('in-view'), delay);
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    elements.forEach((el) => observer.observe(el));
-  }
-
-  document.addEventListener('DOMContentLoaded', initScrollReveal);
-</script>
-
-
-
-
-
-
-
-
-<script>
-  // Global scroll-reveal via IntersectionObserver
-  function initScrollReveal() {
-    const elements = document.querySelectorAll('[data-reveal]:not(.in-view)');
-    if (!elements.length) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const el = entry.target as HTMLElement;
-            const delay = parseInt(el.dataset.revealDelay || '0', 10);
-            setTimeout(() => el.classList.add('in-view'), delay);
-            observer.unobserve(el);
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    elements.forEach((el) => observer.observe(el));
-  }
-
-  document.addEventListener('DOMContentLoaded', initScrollReveal);
-  document.addEventListener('astro:page-load', initScrollReveal);
-</script>
-

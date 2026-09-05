@@ -1,0 +1,103 @@
+---
+// src/pages/case-studies/[...slug].astro
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SEOJsonLd from '../../components/SEOJsonLd.astro';
+
+export async function getStaticPaths() {
+  const studies = await getCollection('caseStudies');
+  return studies.map((study) => ({
+    params: { slug: study.id },
+    props: { study },
+  }));
+}
+
+const { study } = Astro.props;
+const { Content } = await render(study);
+---
+
+<Layout
+  title={`${study.data.title} | Case Study - Aastik Tripathi`}
+  description={study.data.summary}
+>
+  <SEOJsonLd
+    type="article"
+    title={study.data.title}
+    description={study.data.summary}
+    url={Astro.url.href}
+  />
+
+  <div class="min-h-screen bg-[#0d0f14] text-[#e6e8ec] py-12 sm:py-16">
+    <div class="max-w-4xl px-4 mx-auto sm:px-6 space-y-8">
+
+      <!-- Back link -->
+      <a href="/case-studies" class="inline-flex items-center gap-2 font-mono text-xs text-[#e5b842] hover:underline font-bold">
+        ← BACK TO ALL CASE STUDIES
+      </a>
+
+      <!-- Case Study Hero Header with Solid Block Shadow -->
+      <div class="p-6 sm:p-10 bg-[#14171f] border-2 sm:border-[3px] border-[#2e3545] rounded-2xl sm:rounded-3xl shadow-[6px_6px_0px_0px_#e5b842] space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[#2e3545] pb-4 font-mono text-xs text-neutral-400">
+          <span class="px-3 py-1 bg-[#0d0f14] border border-[#2e3545] text-[#e5b842] rounded font-bold shadow-[2px_2px_0px_#e5b842]">
+            {study.data.clientOrProject}
+          </span>
+          <span>Timeline: {study.data.timeline}</span>
+          <span>Role: {study.data.role}</span>
+        </div>
+
+        <h1 class="hero-heading text-[#e6e8ec]">
+          {study.data.title}
+        </h1>
+
+        {study.data.subtitle && (
+          <p class="text-sm sm:text-base font-mono text-[#e5b842] leading-relaxed">
+            {study.data.subtitle}
+          </p>
+        )}
+
+        <!-- Executive Summary Box -->
+        <div class="p-4 bg-[#1a1e28] border border-[#2e3545] rounded-xl space-y-2 shadow-[3px_3px_0px_#0d0f14]">
+          <span class="font-mono text-xs text-neutral-400 uppercase tracking-wider block">// Executive Summary</span>
+          <p class="text-xs sm:text-sm font-mono text-neutral-300 leading-relaxed">
+            {study.data.summary}
+          </p>
+        </div>
+
+        <!-- Measurable Impact Highlights -->
+        {study.data.impactHighlights && study.data.impactHighlights.length > 0 && (
+          <div class="space-y-2 pt-2">
+            <span class="font-mono text-xs text-neutral-400 uppercase tracking-wider block">// Measurable Impact &amp; Metrics</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {study.data.impactHighlights.map((highlight) => (
+                <div class="p-3 bg-[#0d0f14] border border-[#2e3545] rounded-lg font-mono text-xs text-neutral-200 flex items-start gap-2 shadow-[2px_2px_0px_#e5b842]">
+                  <span class="text-[#e5b842]">✔</span>
+                  <span>{highlight}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <!-- Technologies Used -->
+        <div class="space-y-2 pt-2 border-t border-[#2e3545]">
+          <span class="font-mono text-xs text-neutral-400 uppercase tracking-wider block">// Architecture &amp; Tech Stack</span>
+          <div class="flex flex-wrap gap-2">
+            {study.data.techStack.map((tech) => (
+              <span class="px-2.5 py-1 bg-[#1a1e28] border border-[#2e3545] text-neutral-300 font-mono text-xs rounded shadow-[1px_1px_0px_#e5b842]">
+                {tech}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Markdown Narrative with Solid Shadow -->
+      <div class="p-6 sm:p-10 bg-[#14171f] border-2 sm:border-[3px] border-[#2e3545] rounded-2xl sm:rounded-3xl shadow-[5px_5px_0px_0px_#e5b842]">
+        <article class="markdown-content">
+          <Content />
+        </article>
+      </div>
+
+    </div>
+  </div>
+</Layout>

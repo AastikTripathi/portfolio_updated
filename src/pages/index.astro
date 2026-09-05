@@ -4,501 +4,441 @@ import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import SEOJsonLd from '../components/SEOJsonLd.astro';
 
-// Fetch all categories created by the admin via Keystatic automatically
-const dynamicCategories = await getCollection('categories');
-const dynamicCourses = await getCollection('courses');
-const collectionTutorials = await getCollection('tutorials');
-const allWorkedExamples = await getCollection('tutorialWorkedExamples');
-const allPracticeProblems = await getCollection('tutorialPracticeProblems');
+// Fetch collections created via Keystatic / content folders
+const projects = await getCollection('projects');
+const caseStudies = await getCollection('caseStudies');
+const blogs = await getCollection('blogs');
+const careerMilestones = await getCollection('career');
 
-const dynamicTechniques = collectionTutorials.map((t) => {
-  const slug = t.id.replace(/\/index$/, '');
-  const matchingWorked = allWorkedExamples.filter(e => e.data.tutorialSlug === slug || e.id.startsWith(slug + '/'));
-  const matchingPractice = allPracticeProblems.filter(e => e.data.tutorialSlug === slug || e.id.startsWith(slug + '/'));
-
-  return {
-    slug,
-    title: t.data.title,
-    subtitle: t.data.subtitle || '',
-    category: t.data.category || 'Combinatorics',
-    difficulty: t.data.difficulty || 'Intermediate',
-    icon: t.data.icon || '⚡',
-    readTime: t.data.estimatedReadTime || '15 min lesson',
-    workedCount: matchingWorked.length,
-    practiceCount: matchingPractice.length,
-    description: t.data.summary || t.data.subtitle || 'Learn step-by-step problem solving tactics.',
-    tags: t.data.tags || []
-  };
-});
+const featuredProjects = projects.sort((a, b) => a.data.order - b.data.order);
+const featuredCaseStudies = caseStudies.slice(0, 2);
+const recentBlogs = blogs.slice(0, 3);
+const latestCareer = careerMilestones.sort((a, b) => a.data.order - b.data.order).slice(0, 3);
 ---
 
 <Layout 
-  title="deMath | Olympiad Mathematics, Proofs & Problem Vault (JEE, ISI, CMI, Putnam, AIME, IMO, HMMT)"
-  description="Master mathematical problem solving with first-principles proofs, Olympiad problem archives, and structured courses led by Saad Hassan."
+  title="Aastik Tripathi | Portfolio, Projects & Systems Engineering"
+  description="Personal portfolio, architectural case studies, project archives, and career timeline of Aastik Tripathi."
 >
   <SEOJsonLd
     type="website"
-    title="deMath - Olympiad & Competition Mathematics Vault"
-    description="Master competition mathematics with verified proofs, solutions, and problem sets from IMO, Putnam, AIME, ISI, CMI, JEE, IOQM, HMMT, RMO, INMO, TST, RMM, and BMO."
+    title="Aastik Tripathi - Portfolio & Engineering Archive"
+    description="Explore projects, case studies, technical writings, and career milestones of Aastik Tripathi."
     url={Astro.url.href}
   />
-  <div class="min-h-screen bg-[#f5f5f2] text-[#2a2a2a] relative overflow-hidden font-sans selection:bg-[#ebef70] py-12 sm:py-16">
 
-    <!-- Tactile Blueprint Math Dot Grid Background -->
-    <div class="absolute inset-0 z-0 opacity-[0.05] pointer-events-none"
-         style="background-size: 24px 24px; background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px);">
-    </div>
+  <div class="min-h-screen bg-[#0d0f14] text-[#e6e8ec] relative overflow-hidden font-sans py-12 sm:py-16">
+    <div class="max-w-7xl px-4 mx-auto sm:px-6 relative z-10 space-y-16 sm:space-y-20">
 
-    <div class="max-w-7xl px-4 mx-auto sm:px-6 relative z-10 space-y-12">
+      <!-- ================= HERO SECTION ================= -->
+      <section class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
 
-    <!-- Master Hero & Content Canvas Container -->
-    <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        <!-- LEFT COLUMN: Intro Copywriting & Action Blocks -->
+        <div class="lg:col-span-5 space-y-6 text-left">
 
-       <!-- LEFT COLUMN: Dynamic Neo-Brutalist Copywriting & Action Blocks -->
-       <div class="lg:col-span-5 space-y-6 text-left">
-
-          <!-- Tactical Floating Badge Element -->
-          <div class="inline-block px-2.5 sm:px-4 py-0.5 sm:py-1.5 border-[2px] border-[#2a2a2a] rounded-full bg-white font-mono text-[10px] sm:text-xs font-bold shadow-[2px_2px_0px_#2a2a2a] -rotate-1 hero-badge-anim whitespace-nowrap">
-             ○ The Art of Mathematical Thinking
+          <!-- Tactical Status Badge -->
+          <div class="inline-flex items-center gap-2 px-3 py-1 border-2 border-[#2e3545] rounded-full bg-[#14171f] font-mono text-[11px] font-bold text-[#e5b842] shadow-[3px_3px_0px_#e5b842] -rotate-1">
+            <span class="w-2 h-2 rounded-full bg-[#e5b842] inline-block animate-pulse"></span>
+            <span>AVAILABLE FOR CONTRACT &amp; FULL-TIME</span>
           </div>
-
 
           <!-- Architectural Sketchbook Display Header -->
-          <h1 class="font-sketch hero-heading font-semibold text-[#2a2a2a] hero-title-anim">
-             As Euclid observed, there is no royal road to mathematics – but there are <span class="underline decoration-[4px] decoration-[#ebef70] font-bold">elegant ones.</span>
+          <h1 class="hero-heading text-[#e6e8ec]">
+            Engineering systems with <span class="underline decoration-[3px] decoration-[#e5b842] text-[#e5b842]">uncompromising precision.</span>
           </h1>
 
-          <!-- High-Contrast Body Text with Native KaTeX Integration -->
-          <p class="text-xs font-medium leading-relaxed text-neutral-600 sm:text-sm max-w-xl hero-desc-anim">
-             Is mathematics easy? No! But is it interesting and by extension addictive? Hell, yes! Your mathematical woes end here.
+          <!-- High-Contrast Body Text -->
+          <p class="text-xs font-medium leading-relaxed text-neutral-400 sm:text-sm max-w-xl font-mono">
+            Full-stack engineer and technical architect crafting high-concurrency web platforms, resilient distributed backends, and tactile user interfaces.
           </p>
 
-          <!-- The Core 3D Tactile Buttons Row -->
-          <div class="pt-2 flex flex-wrap gap-4 items-center hero-cta-anim">
-             <a href="/courses" class="px-6 py-3 font-mono font-bold uppercase text-xs text-center border-[3px] border-[#2a2a2a] rounded-xl bg-[#2a2a2a] text-[#ebef70] shadow-[4px_4px_0px_0px_#ebef70] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#ebef70] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all">
-                Explore Courses →
-             </a>
+          <!-- Core 3D Tactile Buttons Row with Prominent Block Shadows -->
+          <div class="pt-2 flex flex-wrap gap-4 items-center">
+            <a 
+              href="/projects" 
+              class="px-6 py-3 font-mono font-bold uppercase text-xs text-center border-2 border-[#000000] rounded-xl bg-[#e5b842] text-[#0d0f14] shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#ffffff] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all"
+            >
+              EXPLORE PROJECTS →
+            </a>
+            <a 
+              href="/case-studies" 
+              class="px-6 py-3 font-mono font-bold uppercase text-xs text-center border-2 border-[#2e3545] rounded-xl bg-[#1a1e28] text-[#e6e8ec] shadow-[4px_4px_0px_0px_#e5b842] hover:border-[#e5b842] hover:text-[#e5b842] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#e5b842] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all"
+            >
+              CASE STUDIES →
+            </a>
           </div>
 
-       </div>
+        </div>
 
-       <!-- RIGHT COLUMN: Asymmetrical Sketchbook Frame hosting Dynamic Categories -->
-       <div id="directory" class="lg:col-span-7 relative pt-6 lg:pt-5 w-full hero-card-anim">
+        <!-- RIGHT COLUMN: Asymmetrical Workbook Frame with Quick Navigation Directory -->
+        <div id="directory" class="lg:col-span-7 relative pt-6 lg:pt-5 w-full">
 
-          <!-- The Giant Workbook Outline Outer Box Frame wrapper -->
-          <div class="w-full min-h-[450px] border-2 sm:border-[4px] border-[#2a2a2a] bg-neutral-50/40 rounded-2xl sm:rounded-[32px] pt-14 sm:pt-16 pb-6 sm:pb-8 px-3.5 sm:px-6 relative shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[8px_8px_0px_0px_#2a2a2a] overflow-visible grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-center">
+          <!-- Outer Workbook Frame Wrapper with Signature Block Shadow -->
+          <div class="w-full min-h-[420px] border-2 sm:border-[3px] border-[#2e3545] bg-[#14171f] rounded-2xl sm:rounded-[32px] pt-14 sm:pt-16 pb-6 sm:pb-8 px-3.5 sm:px-6 relative shadow-[6px_6px_0px_0px_#e5b842] sm:shadow-[8px_8px_0px_0px_#e5b842] overflow-visible grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 items-center">
 
-             <!-- CENTRAL HIGHLIGHTER CURATED RESOURCES BUBBLE -->
-             <div class="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 p-3 sm:p-4 bg-[#ebef70] border-2 sm:border-[3px] border-[#2a2a2a] rounded-2xl sm:rounded-[20px] shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[4px_4px_0px_0px_#2a2a2a] rotate-1 text-center max-w-xs w-[88%] sm:w-full z-20">
-                <span class="font-sketch text-sm sm:text-base font-semibold tracking-wide text-[#2a2a2a] block mb-0.5">
-                   Curated Resources
-                </span>
-                <div class="bg-white border-[2px] border-[#2a2a2a] rounded-lg p-1 font-mono text-[9px] font-bold text-neutral-500 shadow-[2px_2px_0px_#2a2a2a]">
-                   For the Love of Mathematics
+            <!-- Central Highlighter Curated Resources Bubble -->
+            <div class="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 p-3 sm:p-3.5 bg-[#e5b842] border-2 border-[#000000] rounded-2xl sm:rounded-[20px] shadow-[4px_4px_0px_0px_#ffffff] rotate-1 text-center max-w-xs w-[88%] sm:w-full z-20 text-[#0d0f14]">
+              <span class="font-poppins text-sm sm:text-base font-bold tracking-wide block leading-tight">
+                Portfolio Navigation Hub
+              </span>
+              <div class="bg-[#0d0f14] border border-[#000000] text-[#e5b842] rounded-md px-2 py-0.5 font-mono text-[10px] font-bold mt-1 inline-block">
+                // 4 Core Architecture Pillars
+              </div>
+            </div>
+
+            <!-- Pillar 1: Projects -->
+            <a
+              href="/projects"
+              class="group p-4 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[4px_4px_0px_0px_#e5b842] hover:shadow-[6px_6px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all block text-left rotate-0.5 hover:-rotate-0.5"
+            >
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-7 h-7 border-2 border-[#2e3545] bg-[#0d0f14] text-[#e5b842] rounded-lg flex items-center justify-center font-mono font-bold text-xs group-hover:bg-[#e5b842] group-hover:text-[#0d0f14] transition-colors shrink-0">
+                  01
                 </div>
-             </div>
+                <h3 class="font-poppins text-base font-bold tracking-tight text-[#e6e8ec] group-hover:text-[#e5b842] transition-colors">
+                  Projects Showcase
+                </h3>
+              </div>
+              <p class="text-xs text-neutral-400 font-mono leading-relaxed">
+                Applications, open-source utilities, distributed services, and live production products.
+              </p>
+            </a>
 
-             <!-- DYNAMIC ITERATION LOOP (All categories displayed on homepage) -->
-             {dynamicCategories.map((category, index) => {
-                const rotationClass = index % 2 === 0 ? 'rotate-0.5 sm:rotate-1 hover:-rotate-0.5 sm:hover:-rotate-1' : '-rotate-0.5 sm:-rotate-1 hover:rotate-0.5 sm:hover:rotate-1';
-                const cleanCatId = category.id.replace(/\.(yaml|yml)$/, '');
-
-                return (
-                   <a
-                      href={`/category/${cleanCatId}`}
-                      class={`group p-3.5 sm:p-4 bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl
-                             shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] hover:shadow-[5px_5px_0px_0px_#2a2a2a] sm:hover:shadow-[7px_7px_0px_0px_#2a2a2a]
-                             hover:-translate-x-[1px] hover:-translate-y-[1px] sm:hover:-translate-x-[2px] sm:hover:-translate-y-[2px]
-                             active:translate-x-[2px] active:translate-y-[2px] active:shadow-none
-                             transition-all duration-200 block text-left ${rotationClass}`}
-                   >
-                      <div class="flex items-center gap-2.5 mb-2">
-                         <div class="w-6 h-6 sm:w-7 sm:h-7 border-2 border-[#2a2a2a] bg-neutral-50 rounded-lg flex items-center justify-center font-mono font-bold text-xs text-[#2a2a2a] group-hover:bg-[#ebef70] transition-colors shrink-0">
-                            {String(index + 1).padStart(2, '0')}
-                         </div>
-                         <h3 class="font-sketch text-sm sm:text-base font-semibold tracking-tight text-[#2a2a2a] group-hover:text-indigo-600 transition-colors">
-                            {category.data.name}
-                         </h3>
-                      </div>
-                      <p class="text-[11px] text-neutral-500 font-medium leading-relaxed">
-                         Access verified proofs and structural training sets assigned under this active branch node.
-                      </p>
-                   </a>
-                );
-             })}
-
-             {dynamicCategories.length === 0 && (
-                <div class="col-span-full p-6 sm:p-8 text-center border-2 sm:border-[3px] border-dashed border-[#2a2a2a] rounded-2xl bg-white font-bold font-mono text-xs text-neutral-400">
-                   No custom branches discovered. Open <a href="/keystatic" class="text-indigo-600 underline font-black">/keystatic</a> admin dashboard setup panel to populate data arrays.
+            <!-- Pillar 2: Case Studies -->
+            <a
+              href="/case-studies"
+              class="group p-4 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[4px_4px_0px_0px_#e5b842] hover:shadow-[6px_6px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all block text-left -rotate-0.5 hover:rotate-0.5"
+            >
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-7 h-7 border-2 border-[#2e3545] bg-[#0d0f14] text-[#e5b842] rounded-lg flex items-center justify-center font-mono font-bold text-xs group-hover:bg-[#e5b842] group-hover:text-[#0d0f14] transition-colors shrink-0">
+                  02
                 </div>
-             )}
+                <h3 class="font-poppins text-base font-bold tracking-tight text-[#e6e8ec] group-hover:text-[#e5b842] transition-colors">
+                  Case Studies
+                </h3>
+              </div>
+              <p class="text-xs text-neutral-400 font-mono leading-relaxed">
+                In-depth architectural breakdowns, performance optimizations, and technical problem solving.
+              </p>
+            </a>
+
+            <!-- Pillar 3: Career Timeline -->
+            <a
+              href="/career"
+              class="group p-4 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[4px_4px_0px_0px_#e5b842] hover:shadow-[6px_6px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all block text-left -rotate-0.5 hover:rotate-0.5"
+            >
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-7 h-7 border-2 border-[#2e3545] bg-[#0d0f14] text-[#e5b842] rounded-lg flex items-center justify-center font-mono font-bold text-xs group-hover:bg-[#e5b842] group-hover:text-[#0d0f14] transition-colors shrink-0">
+                  03
+                </div>
+                <h3 class="font-poppins text-base font-bold tracking-tight text-[#e6e8ec] group-hover:text-[#e5b842] transition-colors">
+                  Career Timeline
+                </h3>
+              </div>
+              <p class="text-xs text-neutral-400 font-mono leading-relaxed">
+                Chronological journey of professional roles, milestones, achievements, and technical growth.
+              </p>
+            </a>
+
+            <!-- Pillar 4: Technical Blogs -->
+            <a
+              href="/blogs"
+              class="group p-4 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[4px_4px_0px_0px_#e5b842] hover:shadow-[6px_6px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-[2px] hover:-translate-y-[2px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all block text-left rotate-0.5 hover:-rotate-0.5"
+            >
+              <div class="flex items-center gap-2.5 mb-2">
+                <div class="w-7 h-7 border-2 border-[#2e3545] bg-[#0d0f14] text-[#e5b842] rounded-lg flex items-center justify-center font-mono font-bold text-xs group-hover:bg-[#e5b842] group-hover:text-[#0d0f14] transition-colors shrink-0">
+                  04
+                </div>
+                <h3 class="font-poppins text-base font-bold tracking-tight text-[#e6e8ec] group-hover:text-[#e5b842] transition-colors">
+                  Technical Blog
+                </h3>
+              </div>
+              <p class="text-xs text-neutral-400 font-mono leading-relaxed">
+                Perspectives on web architecture, systems design, developer tooling, and modern UI practices.
+              </p>
+            </a>
 
           </div>
-       </div>
-    </main>
+        </div>
 
-    <!-- PROMOTIONAL COMPETITION BANNER & EXPLORE ARCHIVE SECTION -->
-    <section class="relative z-10">
-       <div data-reveal class="w-full border-2 sm:border-[4px] border-[#2a2a2a] bg-[#2a2a2a] text-white rounded-2xl sm:rounded-[32px] p-5 sm:p-8 md:p-12 relative shadow-[5px_5px_0px_0px_#ebef70] sm:shadow-[8px_8px_0px_0px_#ebef70] overflow-hidden">
-          <div class="absolute -top-12 -right-12 w-48 h-48 bg-[#ebef70]/10 rounded-full blur-2xl pointer-events-none"></div>
+      </section>
 
-          <div class="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8 relative z-10">
-             <div class="inline-block px-2.5 sm:px-3.5 py-0.5 sm:py-1 border-[2px] border-[#ebef70] rounded-full bg-[#2a2a2a] text-[#ebef70] font-mono text-[10px] sm:text-xs font-bold shadow-[2px_2px_0px_#ebef70]">
-                PROBLEMS ARCHIVE
-             </div>
-
-
-             <h2 class="font-sketch section-heading font-semibold text-white">
-                Verified Proofs & Solutions for 13 Premier Exams
-             </h2>
-
-             <p class="text-xs sm:text-sm font-mono text-neutral-300 max-w-2xl mx-auto leading-relaxed">
-                Explore problem sets and step-by-step solutions for national and international mathematical Olympiads, entrance exams, and university contests.
-             </p>
-
-             <!-- 13 Competition Badges Grid -->
-             <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 pt-2">
-                {[
-                  { code: 'JEE', name: 'JEE Main / Advanced' },
-                  { code: 'ISI', name: 'ISI Entrance' },
-                  { code: 'CMI', name: 'CMI Entrance' },
-                  { code: 'PUTNAM', name: 'Putnam' },
-                  { code: 'AIME', name: 'AIME' },
-                  { code: 'IOQM', name: 'IOQM' },
-                  { code: 'HMMT', name: 'HMMT' },
-                  { code: 'RMO', name: 'RMO' },
-                  { code: 'INMO', name: 'INMO' },
-                  { code: 'IMO', name: 'IMO' },
-                  { code: 'TST', name: 'TST' },
-                  { code: 'RMM', name: 'Romanian Master' },
-                  { code: 'BMO', name: 'British Olympiad' }
-                ].map((exam) => (
-                   <a
-                      href={`/problems?exam=${exam.code}`}
-                      class="px-2.5 sm:px-3 py-1 sm:py-1.5 border-2 border-[#ebef70] bg-neutral-900 text-[#ebef70] hover:bg-[#ebef70] hover:text-[#2a2a2a] font-mono text-[11px] sm:text-xs font-bold rounded-lg shadow-[2px_2px_0px_#ebef70] transition-all hover:scale-105"
-                   >
-                      ■ {exam.name}
-                   </a>
-                ))}
-             </div>
-
-             <!-- Primary Explore Archive CTA -->
-             <div class="pt-2">
-                <a
-                   href="/problems"
-                   class="inline-flex items-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 font-bold uppercase text-xs sm:text-sm tracking-wider border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl bg-[#ebef70] text-[#2a2a2a] shadow-[3px_3px_0px_0px_#ffffff] sm:shadow-[4px_4px_0px_0px_#ffffff] hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all"
-                >
-                   EXPLORE PROBLEM ARCHIVE →
-                </a>
-             </div>
-          </div>
-       </div>
-    </section>
-
-    <!-- THE ART OF PROBLEM SOLVING (SHORT COURSES) SECTION -->
-    {dynamicTechniques.length > 0 && (
+      <!-- ================= FEATURED PROJECTS SECTION ================= -->
       <section class="relative z-10">
-        <div class="relative w-full border-2 sm:border-[4px] border-[#2a2a2a] bg-neutral-50/40 rounded-2xl sm:rounded-[32px] pt-16 sm:pt-24 pb-6 sm:pb-8 px-3.5 sm:px-8 shadow-[5px_5px_0px_0px_#2a2a2a] sm:shadow-[8px_8px_0px_0px_#2a2a2a] overflow-visible">
-          
-          <!-- CENTRAL HIGHLIGHTER BUBBLE -->
-          <div class="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 p-2.5 sm:p-3.5 bg-[#ebef70] border-2 sm:border-[3px] border-[#2a2a2a] rounded-2xl sm:rounded-[18px] shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[4px_4px_0px_0px_#2a2a2a] -rotate-1 text-center max-w-xs w-[88%] sm:w-full z-20">
-            <span class="font-sketch text-sm sm:text-base font-semibold tracking-wide text-[#2a2a2a] block mb-0.5">
-              The Art of Problem Solving
+        <div class="relative w-full border-2 sm:border-[3px] border-[#2e3545] bg-[#14171f] rounded-2xl sm:rounded-[32px] pt-16 sm:pt-20 pb-8 px-4 sm:px-8 shadow-[6px_6px_0px_0px_#e5b842] sm:shadow-[8px_8px_0px_0px_#e5b842] overflow-visible">
+
+          <!-- Central Highlighter Bubble -->
+          <div class="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 p-2.5 sm:p-3.5 bg-[#e5b842] border-2 border-[#000000] rounded-2xl shadow-[4px_4px_0px_0px_#ffffff] -rotate-1 text-center max-w-xs w-[88%] sm:w-full z-20 text-[#0d0f14]">
+            <span class="font-poppins text-sm sm:text-base font-bold tracking-wide block leading-tight">
+              Featured Work
             </span>
-            <div class="bg-white border-[2px] border-[#2a2a2a] rounded-lg p-1 font-mono text-[9px] font-bold text-neutral-500 shadow-[2px_2px_0px_#2a2a2a]">
-              Interactive Short Courses
+            <div class="bg-[#0d0f14] border border-[#000000] text-[#e5b842] rounded px-2 py-0.5 font-mono text-[9px] font-bold mt-0.5 inline-block">
+              // Selected Projects
             </div>
           </div>
 
-          <div data-reveal class="text-center max-w-2xl mx-auto mb-6 sm:mb-10 space-y-2 pt-2 sm:pt-4">
-            <h2 class="font-sketch section-heading font-semibold text-[#2a2a2a]">
-              Problem Solving Techniques
+          <div data-reveal class="text-center max-w-2xl mx-auto mb-8 space-y-2 pt-2">
+            <h2 class="section-heading text-[#e6e8ec]">
+              Featured Projects
             </h2>
-            <p class="text-xs sm:text-sm font-mono text-neutral-600 font-medium leading-relaxed">
-              Short interactive courses designed to build intuition across core mathematical methods through theory, worked examples, and practice problems.
+            <p class="text-xs sm:text-sm font-mono text-neutral-400 leading-relaxed">
+              Curated web applications, distributed backend services, and developer tools.
             </p>
           </div>
 
-          <!-- 3 Featured Short Course Cards Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-            {dynamicTechniques.slice(0, 3).map((tech, index) => {
-              const rotationClass = index === 0 ? 'rotate-0 sm:rotate-0.5 hover:-rotate-0.5' : index === 1 ? 'rotate-0 sm:-rotate-0.5 hover:rotate-0.5' : 'rotate-0 sm:rotate-0.5 hover:-rotate-0.5';
+          <!-- Projects Grid with Prominent Block Shadows -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featuredProjects.slice(0, 3).map((project, index) => {
+              const rotation = index === 0 ? 'sm:rotate-0.5' : index === 1 ? 'sm:-rotate-0.5' : 'sm:rotate-0.5';
               return (
-                <div data-reveal data-reveal-delay={index * 120} class={`group p-4 sm:p-6 bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl
-                             shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] hover:shadow-[6px_6px_0px_0px_#2a2a2a] sm:hover:shadow-[7px_7px_0px_0px_#2a2a2a]
-                             hover:-translate-x-[1px] hover:-translate-y-[1px] sm:hover:-translate-x-[2px] sm:hover:-translate-y-[2px]
-                             transition-all duration-200 flex flex-col justify-between text-left ${rotationClass}`}>
-                  <div class="space-y-3 sm:space-y-4">
+                <div 
+                  data-reveal 
+                  data-reveal-delay={index * 100}
+                  class={`p-5 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[5px_5px_0px_0px_#e5b842] hover:shadow-[7px_7px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-1 hover:-translate-y-1 transition-all duration-200 flex flex-col justify-between ${rotation}`}
+                >
+                  <div class="space-y-3">
                     <div class="flex items-center justify-between">
-                      <div class="flex items-center gap-2">
-                        <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-bold text-xs text-[#2a2a2a] shadow-[1px_1px_0px_#2a2a2a] sm:shadow-[2px_2px_0px_#2a2a2a]">
-                          {String(index + 1).padStart(2, '0')}
-                        </div>
-                        <span class="px-2 py-0.5 bg-neutral-100 border border-neutral-300 text-neutral-700 rounded text-[10px] font-mono font-bold">
-                          {tech.category}
-                        </span>
-                      </div>
+                      <span class="px-2 py-0.5 bg-[#0d0f14] border border-[#2e3545] text-[#e5b842] rounded text-[10px] font-mono font-bold shadow-[1px_1px_0px_#e5b842]">
+                        {project.data.category}
+                      </span>
+                      <span class="font-mono text-[10px] text-neutral-400">
+                        {project.data.role}
+                      </span>
                     </div>
 
-                    <div>
-                      <h3 class="card-heading font-semibold text-[#2a2a2a] group-hover:text-indigo-600 transition-colors">
-                        <a href={`/techniques/${tech.slug}`}>
-                          {tech.title}
-                        </a>
-                      </h3>
-                      {tech.subtitle && (
-                        <p class="text-[11px] font-mono font-bold text-neutral-400 mt-1 line-clamp-1">
-                          {tech.subtitle}
-                        </p>
-                      )}
-                    </div>
+                    <h3 class="card-heading text-[#e6e8ec] hover:text-[#e5b842] transition-colors">
+                      <a href={`/projects/${project.id}`}>
+                        {project.data.title}
+                      </a>
+                    </h3>
 
-                    <p class="text-xs text-neutral-600 font-sans font-medium leading-relaxed line-clamp-3">
-                      {tech.description}
+                    <p class="text-xs font-mono text-neutral-400 leading-relaxed line-clamp-3">
+                      {project.data.description}
                     </p>
 
-                    <!-- Tags chip row -->
-                    {tech.tags && tech.tags.length > 0 && (
-                      <div class="flex flex-wrap gap-1 pt-1">
-                        {tech.tags.slice(0, 3).map((tag: string) => (
-                          <span class="px-2 py-0.5 bg-neutral-50 border border-neutral-200 text-neutral-500 rounded text-[9px] font-mono">
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
+                    <!-- Tech Stack Badges -->
+                    <div class="flex flex-wrap gap-1.5 pt-1">
+                      {project.data.techStack.map((tech) => (
+                        <span class="px-1.5 py-0.5 bg-[#0d0f14] border border-[#2e3545] text-neutral-300 rounded text-[10px] font-mono">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  <div class="pt-3.5 sm:pt-4 border-t-2 border-dashed border-neutral-200 mt-4 sm:mt-5 space-y-3">
-                    <div class="grid grid-cols-2 gap-2 text-center font-mono text-[10px] font-bold">
-                      <span class="p-1 sm:p-1.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800">
-                        {tech.workedCount} Examples
-                      </span>
-                      <span class="p-1 sm:p-1.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-800">
-                        {tech.practiceCount} Problems
-                      </span>
-                    </div>
-
-                    <a 
-                      href={`/techniques/${tech.slug}`}
-                      class="w-full py-2 sm:py-2.5 px-3 rounded-xl bg-[#ebef70] border-2 border-[#2a2a2a] text-xs font-mono font-bold text-[#2a2a2a] text-center shadow-[2px_2px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2a2a2a] transition-all flex items-center justify-center gap-1.5 tracking-wider"
-                    >
-                      <span>Read</span>
-                      <span>→</span>
+                  <div class="pt-5 mt-4 border-t border-[#2e3545] flex items-center justify-between font-mono text-xs font-bold">
+                    <a href={`/projects/${project.id}`} class="text-[#e5b842] hover:underline flex items-center gap-1">
+                      Overview →
                     </a>
+                    <div class="flex items-center gap-3">
+                      {project.data.githubUrl && (
+                        <a href={project.data.githubUrl} target="_blank" rel="noopener noreferrer" class="text-neutral-400 hover:text-[#e6e8ec]">
+                          Code ↗
+                        </a>
+                      )}
+                      {project.data.liveUrl && (
+                        <a href={project.data.liveUrl} target="_blank" rel="noopener noreferrer" class="text-neutral-400 hover:text-[#e5b842]">
+                          Live ↗
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
             })}
+
+            {featuredProjects.length === 0 && (
+              <div class="col-span-full p-8 text-center border-2 border-dashed border-[#2e3545] rounded-xl bg-[#1a1e28] font-mono text-xs text-neutral-400">
+                No projects added yet. Open <a href="/keystatic" class="text-[#e5b842] underline font-bold">/keystatic</a> or add files in <code>src/content/projects/</code> to populate.
+              </div>
+            )}
           </div>
 
-          <!-- Section Footer / View All CTA -->
-          <div class="text-center pt-6 sm:pt-8">
+          <div class="mt-8 text-center">
             <a 
-              href="/techniques" 
-              class="inline-flex items-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 font-bold uppercase text-xs sm:text-sm tracking-wider border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl bg-[#ebef70] text-[#2a2a2a] shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#2a2a2a] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all"
+              href="/projects" 
+              class="inline-flex items-center gap-2 px-6 py-3 font-mono font-bold uppercase text-xs border-2 border-[#2e3545] rounded-xl bg-[#0d0f14] text-[#e5b842] shadow-[4px_4px_0px_0px_#e5b842] hover:border-[#e5b842] hover:shadow-[6px_6px_0px_0px_#e5b842] hover:-translate-x-0.5 hover:-translate-y-0.5 transition-all"
             >
-              EXPLORE ALL SHORT COURSES ({dynamicTechniques.length}) →
+              VIEW ALL PROJECTS ({projects.length}) →
             </a>
           </div>
 
         </div>
       </section>
-    )}
 
-    <!-- Why deMath / Philosophy Section -->
-    <section class="relative z-10">
-      <div data-reveal class="text-center space-y-2 mb-6 sm:mb-8">
-        <h2 class="font-sketch section-heading font-semibold text-[#2a2a2a]">Why deMath?</h2>
-        <p class="text-xs font-mono font-bold text-neutral-500 max-w-lg mx-auto uppercase tracking-wider"></p>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-8">
-        <!-- Card 1: First-Principles Rigor -->
-        <div data-reveal data-reveal-delay="0" class="p-5 sm:p-8 bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[6px_6px_0px_0px_#2a2a2a] flex flex-col justify-between space-y-4 sm:space-y-6">
-          <div class="space-y-3 sm:space-y-4">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-neutral-100 border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-base sm:text-lg text-indigo-600 shadow-[2px_2px_0px_#2a2a2a]">
-              ∀
-            </div>
-            <h3 class="card-heading font-bold text-[#2a2a2a]">First-Principles Rigor</h3>
-            <p class="text-xs text-neutral-500 font-sans font-medium leading-relaxed">
-              We do not believe in rote memorization or calculation tricks. Every formula is derived from the ground up, and every theorem is proved from absolute first principles to cultivate pure mathematical intuition.
-            </p>
-          </div>
-        </div>
-
-        <!-- Card 2: Learn by Proving (Highlighted Center Card) -->
-        <div data-reveal data-reveal-delay="120" class="p-5 sm:p-8 bg-[#2a2a2a] text-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl shadow-[5px_5px_0px_0px_#ebef70] sm:shadow-[8px_8px_0px_0px_#ebef70] flex flex-col justify-between space-y-4 sm:space-y-6 relative md:translate-y-0">
-          <div class="absolute -top-3.5 right-4 sm:right-6 px-2.5 sm:px-3 py-0.5 border-2 border-[#2a2a2a] bg-[#ebef70] text-[10px] sm:text-xs font-mono font-bold text-[#2a2a2a] rounded shadow-[2px_2px_0px_#2a2a2a] uppercase tracking-wider">
-             Core Focus
-          </div>
-          <div class="space-y-3 sm:space-y-4">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-base sm:text-lg text-[#2a2a2a] shadow-[2px_2px_0px_#2a2a2a]">
-              ■
-            </div>
-            <h3 class="card-heading font-bold text-[#ebef70]">Active Proof Writing</h3>
-            <p class="text-xs text-neutral-300 font-sans font-medium leading-relaxed">
-              True mathematics is done, not watched. Students engage in active visualization, construct rigorous mathematical proofs, and submit them for direct evaluation by experienced educators.
-            </p>
-          </div>
-        </div>
-
-        <!-- Card 3: Olympiad-Ready Pedagogy -->
-        <div data-reveal data-reveal-delay="240" class="p-5 sm:p-8 bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[6px_6px_0px_0px_#2a2a2a] flex flex-col justify-between space-y-4 sm:space-y-6">
-          <div class="space-y-3 sm:space-y-4">
-            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-neutral-100 border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-base sm:text-lg text-indigo-600 shadow-[2px_2px_0px_#2a2a2a]">
-              ∞
-            </div>
-            <h3 class="card-heading font-bold text-[#2a2a2a]">Proven Olympiad Pedagogy</h3>
-            <p class="text-xs text-neutral-500 font-sans font-medium leading-relaxed">
-              Learn from Saad Hassan, an accomplished educator with 8+ years as National Head of Olympiad Division at VMC and credentials from North Carolina State University. Rigorous prep built for elite contest success.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- BOOK PROMO BANNER (Placed right before Courses) -->
-    <section class="relative z-10">
-      <div data-reveal class="bg-[#2a2a2a] text-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8 shadow-[5px_5px_0px_0px_#ebef70] sm:shadow-[8px_8px_0px_0px_#ebef70] flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6 hover:translate-x-[-1px] hover:translate-y-[-1px] transition-all">
-        <div class="flex items-center gap-4 sm:gap-5">
-          <div class="hidden sm:flex w-16 h-20 bg-amber-600 rounded-lg border-2 border-white/20 shrink-0 overflow-hidden shadow-md">
-            <img src="/images/books/olympiad-companion.jpg" alt="Olympiad Companion Book Cover" class="w-full h-full object-cover" />
-          </div>
-          <div class="space-y-1 text-left">
-            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 bg-[#ebef70] text-[#2a2a2a] rounded font-mono text-[10px] font-black uppercase tracking-wider">
-              <span>PUBLISHED TEXTBOOK</span>
-            </div>
-            <h3 class="card-heading font-bold text-white">
-              Looking to bolster your Math Olympiad performance?
-            </h3>
-            <p class="text-xs sm:text-sm font-sans text-neutral-300 font-medium">
-              Explore Saad Hassan's published work: <span class="text-[#ebef70] font-bold">Olympiad Companion — A Fine Mathematical Mischief</span>.
-            </p>
-          </div>
-        </div>
-
-        <a
-          href="/resources"
-          class="w-full md:w-auto text-center shrink-0 px-5 sm:px-6 py-2.5 sm:py-3 bg-[#ebef70] text-[#2a2a2a] border-2 border-[#2a2a2a] rounded-xl font-mono text-xs font-black uppercase tracking-wider hover:bg-yellow-300 shadow-[3px_3px_0px_#ffffff] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-        >
-          EXPLORE BOOK & RESOURCES →
-        </a>
-      </div>
-    </section>
-
-    <!-- DYNAMIC FEATURED COURSES SECTION -->
-    {dynamicCourses.length > 0 && (
+      <!-- ================= CASE STUDIES PREVIEW ================= -->
       <section class="relative z-10">
-         <div class="relative w-full border-2 sm:border-[4px] border-[#2a2a2a] bg-neutral-50/40 rounded-2xl sm:rounded-[32px] pt-16 sm:pt-24 pb-6 sm:pb-8 px-3.5 sm:px-8 shadow-[5px_5px_0px_0px_#2a2a2a] sm:shadow-[8px_8px_0px_0px_#2a2a2a] overflow-visible">
-            
-            <!-- CENTRAL HIGHLIGHTER BUBBLE -->
-            <div class="absolute -top-6 sm:-top-7 left-1/2 -translate-x-1/2 p-2.5 sm:p-3.5 bg-[#ebef70] border-2 sm:border-[3px] border-[#2a2a2a] rounded-2xl sm:rounded-[18px] shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[4px_4px_0px_0px_#2a2a2a] rotate-1 text-center max-w-xs w-[88%] sm:w-full z-20">
-               <span class="font-sketch text-sm sm:text-base font-semibold tracking-wide uppercase text-[#2a2a2a] block mb-0.5">
-                  Featured Cohorts
-               </span>
-               <div class="bg-white border-[2px] border-[#2a2a2a] rounded-lg p-1 font-mono text-[9px] font-bold text-neutral-500 shadow-[2px_2px_0px_#2a2a2a]">
-                  Systematic Math Prep Courses
-               </div>
+        <div data-reveal class="w-full border-2 sm:border-[3px] border-[#2e3545] bg-[#14171f] text-[#e6e8ec] rounded-2xl sm:rounded-[32px] p-6 sm:p-10 relative shadow-[6px_6px_0px_0px_#e5b842] sm:shadow-[8px_8px_0px_0px_#e5b842] overflow-hidden">
+          
+          <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 border-b-2 border-[#2e3545] pb-6">
+            <div>
+              <div class="inline-block px-3 py-1 border-2 border-[#000000] rounded-full bg-[#e5b842] text-[#0d0f14] font-mono text-[10px] font-bold shadow-[3px_3px_0px_#ffffff] mb-3">
+                DEEP DIVES
+              </div>
+              <h2 class="section-heading text-[#e6e8ec]">
+                Architectural Case Studies
+              </h2>
+              <p class="text-xs sm:text-sm font-mono text-neutral-400 mt-1 max-w-xl">
+                Comprehensive breakdowns of high-scale challenges, decisions, and measured outcomes.
+              </p>
             </div>
+            <a 
+              href="/case-studies" 
+              class="font-mono text-xs font-bold text-[#e5b842] hover:underline shrink-0"
+            >
+              All Case Studies →
+            </a>
+          </div>
 
-            <!-- Grid matching explore problems style -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-2 sm:pt-4">
-               {dynamicCourses.slice(0, 4).map((course, index) => {
-                  const rotationClass = index % 2 === 0 ? 'rotate-0 sm:rotate-0.5 hover:-rotate-0.5' : 'rotate-0 sm:-rotate-0.5 hover:rotate-0.5';
-                  return (
-                     <div data-reveal data-reveal-delay={index * 100} class={`group p-4 sm:p-6 bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl
-                                 shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] hover:shadow-[6px_6px_0px_0px_#2a2a2a] sm:hover:shadow-[7px_7px_0px_0px_#2a2a2a]
-                                 hover:-translate-x-[1px] hover:-translate-y-[1px] sm:hover:-translate-x-[2px] sm:hover:-translate-y-[2px]
-                                 transition-all duration-200 flex flex-col justify-between text-left ${rotationClass}`}>
-                        <div class="space-y-2.5 sm:space-y-3">
-                           <div class="flex items-center justify-between">
-                              <div class="w-8 h-8 border-2 border-[#2a2a2a] bg-neutral-50 rounded-lg flex items-center justify-center font-mono font-bold text-sm text-[#2a2a2a] group-hover:bg-[#ebef70] transition-colors shadow-[1px_1px_0px_#2a2a2a] shrink-0">
-                                 {course.data.emblem}
-                              </div>
-                              <span class={`px-2 py-0.5 border-2 border-[#2a2a2a] ${course.data.badgeColor || 'bg-[#ebef70]'} text-[10px] font-mono font-bold rounded shadow-[1px_1px_0px_#2a2a2a] shrink-0`}>
-                                 {course.data.tag}
-                              </span>
-                           </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featuredCaseStudies.map((study, idx) => (
+              <div class="p-6 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[5px_5px_0px_0px_#e5b842] hover:shadow-[7px_7px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-1 hover:-translate-y-1 transition-all flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between font-mono text-[11px] text-neutral-400">
+                    <span class="text-[#e5b842] font-bold">■ {study.data.clientOrProject}</span>
+                    <span>{study.data.timeline}</span>
+                  </div>
+                  <h3 class="font-poppins text-lg font-bold text-[#e6e8ec] hover:text-[#e5b842] transition-colors">
+                    <a href={`/case-studies/${study.id}`}>
+                      {study.data.title}
+                    </a>
+                  </h3>
+                  <p class="text-xs font-mono text-neutral-400 leading-relaxed">
+                    {study.data.summary}
+                  </p>
 
-                           <div>
-                              <h3 class="card-heading font-semibold text-[#2a2a2a] group-hover:text-indigo-600 transition-colors">
-                                 {course.data.title}
-                              </h3>
-                              <span class="block text-[10px] font-mono font-bold text-neutral-400 uppercase tracking-wide mt-1">{course.data.subtitle}</span>
-                           </div>
+                  {study.data.impactHighlights && study.data.impactHighlights.length > 0 && (
+                    <ul class="pt-2 space-y-1 font-mono text-[11px] text-neutral-300">
+                      {study.data.impactHighlights.slice(0, 2).map((metric) => (
+                        <li class="flex items-start gap-2">
+                          <span class="text-[#e5b842]">✔</span>
+                          <span>{metric}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
 
-                           <p class="text-xs text-neutral-500 font-medium leading-relaxed font-sans line-clamp-3">
-                              {course.data.description}
-                           </p>
-                        </div>
+                <div class="pt-3 border-t border-[#2e3545] flex items-center justify-between font-mono text-xs">
+                  <a href={`/case-studies/${study.id}`} class="text-[#e5b842] font-bold hover:underline">
+                    Read Full Study →
+                  </a>
+                  <span class="text-neutral-500 text-[10px]">{study.data.role}</span>
+                </div>
+              </div>
+            ))}
+          </div>
 
-                        <div class="pt-3.5 sm:pt-4 border-t border-dashed border-neutral-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4 mt-4">
-                           <!-- Highly visible price tags -->
-                           <div>
-                              <span class="text-base sm:text-lg font-mono font-bold text-[#2a2a2a]">{course.data.price} <span class="text-[9px] font-mono font-bold text-neutral-400">INR</span></span>
-                           </div>
-                           <a 
-                              href={course.data.redirectLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              class="w-full sm:w-auto text-center px-3.5 sm:px-4 py-2 sm:py-2 bg-indigo-50 border-2 border-[#2a2a2a] text-xs font-mono font-bold rounded-lg shadow-[2px_2px_0px_#2a2a2a] hover:bg-[#ebef70] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all shrink-0"
-                           >
-                              Explore Course ↗
-                           </a>
-                        </div>
-
-                     </div>
-                  );
-               })}
-            </div>
-
-            <div class="text-center pt-6 sm:pt-8">
-               <a href="/courses" class="inline-flex items-center gap-2 px-6 py-2.5 font-bold uppercase text-xs tracking-wider border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl bg-white text-[#2a2a2a] shadow-[3px_3px_0px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all">
-                  View All Courses →
-               </a>
-            </div>
-         </div>
+        </div>
       </section>
-    )}
+
+      <!-- ================= CAREER TIMELINE PREVIEW ================= -->
+      <section class="relative z-10">
+        <div class="w-full border-2 sm:border-[3px] border-[#2e3545] bg-[#14171f] rounded-2xl sm:rounded-[32px] p-6 sm:p-10 shadow-[6px_6px_0px_0px_#e5b842] sm:shadow-[8px_8px_0px_0px_#e5b842]">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b-2 border-[#2e3545] pb-6">
+            <div>
+              <div class="inline-block px-3 py-1 border-2 border-[#2e3545] rounded-full bg-[#0d0f14] text-[#e5b842] font-mono text-[10px] font-bold shadow-[3px_3px_0px_#e5b842] mb-2">
+                EXPERIENCE &amp; TIMELINE
+              </div>
+              <h2 class="section-heading text-[#e6e8ec]">
+                Career Trajectory
+              </h2>
+            </div>
+            <a 
+              href="/career" 
+              class="px-5 py-2.5 font-mono font-bold text-xs uppercase border-2 border-[#000000] rounded-lg bg-[#e5b842] text-[#0d0f14] shadow-[4px_4px_0px_#ffffff] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#ffffff] transition-all shrink-0"
+            >
+              EXPLORE FULL TIMELINE →
+            </a>
+          </div>
+
+          <div class="space-y-4">
+            {latestCareer.map((item, idx) => (
+              <div class="p-4 sm:p-5 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[4px_4px_0px_0px_#e5b842] flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-[#e5b842] transition-all">
+                <div class="space-y-1">
+                  <div class="flex items-center gap-2">
+                    <span class="font-poppins font-bold text-[#e6e8ec] text-sm sm:text-base">
+                      {item.data.role}
+                    </span>
+                    {item.data.current && (
+                      <span class="px-2 py-0.5 bg-[#e5b842] text-[#0d0f14] font-mono font-bold text-[9px] rounded">
+                        CURRENT
+                      </span>
+                    )}
+                  </div>
+                  <p class="font-mono text-xs text-[#e5b842]">
+                    {item.data.company} • <span class="text-neutral-400">{item.data.location}</span>
+                  </p>
+                  <p class="text-xs font-mono text-neutral-400 line-clamp-1">
+                    {item.data.summary}
+                  </p>
+                </div>
+                <div class="font-mono text-xs text-neutral-400 sm:text-right shrink-0">
+                  <span class="px-2.5 py-1 bg-[#0d0f14] border border-[#2e3545] rounded text-neutral-300 shadow-[2px_2px_0px_#e5b842]">
+                    {item.data.startDate} — {item.data.endDate || 'Present'}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= TECHNICAL BLOG PREVIEW ================= -->
+      <section class="relative z-10">
+        <div class="w-full border-2 sm:border-[3px] border-[#2e3545] bg-[#14171f] rounded-2xl sm:rounded-[32px] p-6 sm:p-10 shadow-[6px_6px_0px_0px_#e5b842] sm:shadow-[8px_8px_0px_0px_#e5b842]">
+          
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4 border-b-2 border-[#2e3545] pb-6">
+            <div>
+              <div class="inline-block px-3 py-1 border-2 border-[#2e3545] rounded-full bg-[#0d0f14] text-[#e5b842] font-mono text-[10px] font-bold shadow-[3px_3px_0px_#e5b842] mb-2">
+                WRITINGS
+              </div>
+              <h2 class="section-heading text-[#e6e8ec]">
+                Technical Blog
+              </h2>
+            </div>
+            <a 
+              href="/blogs" 
+              class="font-mono text-xs font-bold text-[#e5b842] hover:underline"
+            >
+              All Articles ({blogs.length}) →
+            </a>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {recentBlogs.map((blog, idx) => (
+              <div class="p-5 bg-[#1a1e28] border-2 border-[#2e3545] rounded-xl shadow-[5px_5px_0px_0px_#e5b842] hover:shadow-[7px_7px_0px_0px_#e5b842] hover:border-[#e5b842] hover:-translate-x-1 hover:-translate-y-1 transition-all flex flex-col justify-between space-y-4">
+                <div class="space-y-2">
+                  <div class="flex items-center justify-between font-mono text-[10px] text-neutral-400">
+                    <span>{new Date(blog.data.publishDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                    <span class="text-[#e5b842] font-bold">{blog.data.readingTime}</span>
+                  </div>
+
+                  <h3 class="font-poppins text-base font-bold text-[#e6e8ec] hover:text-[#e5b842] transition-colors">
+                    <a href={`/blogs/${blog.id}`}>
+                      {blog.data.title}
+                    </a>
+                  </h3>
+
+                  <p class="text-xs font-mono text-neutral-400 line-clamp-3">
+                    {blog.data.summary}
+                  </p>
+                </div>
+
+                <div class="pt-3 border-t border-[#2e3545] flex items-center justify-between font-mono text-xs">
+                  <a href={`/blogs/${blog.id}`} class="text-[#e5b842] font-bold hover:underline">
+                    Read Article →
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
 
     </div>
   </div>
 </Layout>
-
-<style>
-  @keyframes heroSlideUp {
-    0% {
-      opacity: 0;
-      transform: translateY(32px);
-    }
-    100% {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-
-  .hero-badge-anim {
-    animation: heroSlideUp 1.05s cubic-bezier(0.22, 1, 0.36, 1) 0.1s both;
-  }
-
-  .hero-title-anim {
-    animation: heroSlideUp 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.25s both;
-  }
-
-  .hero-desc-anim {
-    animation: heroSlideUp 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both;
-  }
-
-  .hero-cta-anim {
-    animation: heroSlideUp 1.15s cubic-bezier(0.22, 1, 0.36, 1) 0.55s both;
-  }
-
-  .hero-card-anim {
-    animation: heroSlideUp 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.35s both;
-  }
-
-  /* ── Scroll-reveal handled globally via Layout.astro + global.css ── */
-</style>
-
-

@@ -1,523 +1,233 @@
 // keystatic.config.ts
 import { config, fields, collection } from '@keystatic/core';
-import { inline, block } from '@keystatic/core/content-components';
 
 export default config({
     storage: process.env.NODE_ENV === 'development'
         ? { kind: 'local' }
         : {
             kind: 'github',
-            repo: 'AastikTripathi/astro_test',
+            repo: 'AastikTripathi/portfolio_updated',
         },
     collections: {
-        problems: collection({
-            label: 'Problems',
+        projects: collection({
+            label: 'Projects',
             slugField: 'title',
-            path: 'src/content/problems/*',
+            path: 'src/content/projects/*',
             entryLayout: 'form',
-            columns: ['superCategory', 'category', 'difficulty', 'publishDate'],
+            columns: ['title', 'category', 'featured', 'order'],
             format: { contentField: 'content' },
             schema: {
-
                 title: fields.slug({
-                    name: { label: 'Title' },
+                    name: { label: 'Project Title' },
                 }),
-                author: fields.text({
-                    label: 'Author Name',
-                    defaultValue: 'Saad Hassan',
+                description: fields.text({
+                    label: 'Short Description',
+                    multiline: true,
                 }),
-                category: fields.relationship({
-                    label: 'Category / Discipline',
-                    collection: 'categories',
+                role: fields.text({
+                    label: 'Your Role',
+                    defaultValue: 'Lead Developer',
                 }),
-                superCategory: fields.select({
-                    label: 'Target Exam / Competition',
+                category: fields.select({
+                    label: 'Category',
                     options: [
-                        { label: 'JEE (Main / Advanced)', value: 'JEE' },
-                        { label: 'ISI (Indian Statistical Institute)', value: 'ISI' },
-                        { label: 'CMI (Chennai Mathematical Institute)', value: 'CMI' },
-                        { label: 'Putnam (William Lowell Putnam Competition)', value: 'PUTNAM' },
-                        { label: 'AIME (American Invitational Mathematics Examination)', value: 'AIME' },
-                        { label: 'IOQM (Indian Olympiad Qualifier in Math)', value: 'IOQM' },
-                        { label: 'HMMT (Harvard-MIT Math Tournament)', value: 'HMMT' },
-                        { label: 'RMO (Regional Math Olympiad)', value: 'RMO' },
-                        { label: 'INMO (Indian National Math Olympiad)', value: 'INMO' },
-                        { label: 'IMO (International Math Olympiad)', value: 'IMO' },
-                        { label: 'TST (Team Selection Test)', value: 'TST' },
-                        { label: 'RMM (Romanian Master of Math / RMO)', value: 'RMM' },
-                        { label: 'BMO (British Math Olympiad)', value: 'BMO' },
+                        { label: 'Web Application', value: 'Web Application' },
+                        { label: 'AI & Machine Learning', value: 'AI & Machine Learning' },
+                        { label: 'Systems & Tooling', value: 'Systems & Tooling' },
+                        { label: 'Open Source', value: 'Open Source' },
+                        { label: 'Client Work', value: 'Client Work' },
                     ],
-                    defaultValue: 'JEE',
+                    defaultValue: 'Web Application',
                 }),
-                year: fields.integer({
-                    label: 'Exam / Competition Year (e.g. 2024)',
-                    validation: { isRequired: false },
+                techStack: fields.array(fields.text({ label: 'Technology / Tool' }), {
+                    label: 'Tech Stack',
+                    itemLabel: (props) => props.value,
                 }),
-                difficulty: fields.select({
-                    label: 'Difficulty Level',
-                    options: [
-                        { label: 'Beginner', value: 'Beginner' },
-                        { label: 'Intermediate', value: 'Intermediate' },
-                        { label: 'Advanced', value: 'Advanced' },
-                        { label: 'Elite / Olympiad', value: 'Elite' },
-                    ],
-                    defaultValue: 'Intermediate',
+                githubUrl: fields.url({
+                    label: 'GitHub Repository URL',
+                }),
+                liveUrl: fields.url({
+                    label: 'Live Demo URL',
+                }),
+                featured: fields.checkbox({
+                    label: 'Featured on Homepage',
+                    defaultValue: false,
+                }),
+                order: fields.integer({
+                    label: 'Sort Order (lower numbers come first)',
+                    defaultValue: 10,
+                }),
+                publishDate: fields.date({
+                    label: 'Launch / Publish Date',
+                    defaultValue: { kind: 'today' },
+                }),
+                coverImage: fields.text({
+                    label: 'Cover Image URL or Path',
+                }),
+                content: fields.markdoc({
+                    label: 'Detailed Project Story / Overview',
+                }),
+            },
+        }),
+
+        caseStudies: collection({
+            label: 'Case Studies',
+            slugField: 'title',
+            path: 'src/content/case-studies/*',
+            entryLayout: 'form',
+            columns: ['title', 'clientOrProject', 'featured', 'timeline'],
+            format: { contentField: 'content' },
+            schema: {
+                title: fields.slug({
+                    name: { label: 'Case Study Title' },
+                }),
+                subtitle: fields.text({
+                    label: 'Subtitle / Core Value Proposition',
+                }),
+                clientOrProject: fields.text({
+                    label: 'Client or Product Name',
+                }),
+                role: fields.text({
+                    label: 'Your Role',
+                    defaultValue: 'Full Stack Architect & Developer',
+                }),
+                timeline: fields.text({
+                    label: 'Timeline / Duration',
+                    defaultValue: '3 Months',
+                }),
+                summary: fields.text({
+                    label: 'Executive Summary',
+                    multiline: true,
+                }),
+                impactHighlights: fields.array(fields.text({ label: 'Impact Metric / Result' }), {
+                    label: 'Impact Highlights',
+                    itemLabel: (props) => props.value,
+                }),
+                techStack: fields.array(fields.text({ label: 'Technology' }), {
+                    label: 'Tech Stack',
+                    itemLabel: (props) => props.value,
+                }),
+                featured: fields.checkbox({
+                    label: 'Featured on Homepage',
+                    defaultValue: false,
                 }),
                 publishDate: fields.date({
                     label: 'Publish Date',
                     defaultValue: { kind: 'today' },
                 }),
-                tags: fields.array(
-                    fields.text({ label: 'Tag Keyword' }),
-                    {
-                        label: 'Tags (Stack Exchange Style)',
-                        itemLabel: props => props.value || 'New Tag',
-                    }
-                ),
+                coverImage: fields.text({
+                    label: 'Cover Image URL or Path',
+                }),
                 content: fields.markdoc({
-                    label: 'Problem Content (Statement & Solution)',
-                    description: 'Use "## Problem Statement" for the question, and "## Solution & Proof" to start the solution section.',
-                    extension: 'md',
-                    options: {
-                        table: true,
-                        image: {
-                            directory: 'public/images/problems',
-                            publicPath: '/images/problems/',
-                        },
-                    },
-                    components: {
-                        wolfram: inline({
-                            label: 'Wolfram Demonstration',
-                            schema: {
-                                id: fields.text({ label: 'Demonstration ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        geogebra: inline({
-                            label: 'GeoGebra Applet',
-                            schema: {
-                                id: fields.text({ label: 'Material ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        youtube: inline({
-                            label: 'YouTube Video',
-                            schema: {
-                                id: fields.text({ label: 'Video ID or URL' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                    },
+                    label: 'Case Study Content (Problem, Architecture, Results)',
                 }),
-                solution: fields.empty(),
-                references: fields.array(
-                    fields.object({
-                        title: fields.text({ label: 'Citation / Title (e.g. Putnam 2021 Paper)' }),
-                        url: fields.url({ label: 'Link URL (Optional)', validation: { isRequired: false } }),
-                        details: fields.text({ label: 'Author / Journal Details (Optional)', validation: { isRequired: false } }),
-                    }),
-                    {
-                        label: 'Bibliography & References',
-                        itemLabel: props => props.fields.title.value || 'New Reference',
-                    }
-                ),
             },
         }),
-        categories: collection({
-            label: 'Categories',
-            slugField: 'name',
-            path: 'src/content/categories/*',
-            format: { data: 'yaml' },
-            schema: {
-                name: fields.slug({
-                    name: { label: 'Category Name (e.g. Combinatorics, Number Theory)' }
-                }),
-                description: fields.text({ label: 'Category Description' }),
-                icon: fields.text({ label: 'Emoji Icon (e.g. 🎲, 📈, 📐)', defaultValue: '📐' }),
-            },
-        }),
-        articles: collection({
-            label: 'Articles',
+
+        blogs: collection({
+            label: 'Blog Posts',
             slugField: 'title',
-            path: 'src/content/articles/*',
+            path: 'src/content/blogs/*',
             entryLayout: 'form',
-            columns: ['category', 'publishDate'],
+            columns: ['title', 'publishDate', 'readingTime'],
             format: { contentField: 'content' },
             schema: {
                 title: fields.slug({
-                    name: { label: 'Article Title' },
+                    name: { label: 'Blog Post Title' },
                 }),
-                subtitle: fields.text({ label: 'Subtitle / Tagline' }),
-                category: fields.relationship({
-                    label: 'Category',
-                    collection: 'categories',
+                publishDate: fields.date({
+                    label: 'Publish Date',
+                    defaultValue: { kind: 'today' },
                 }),
                 author: fields.text({
                     label: 'Author Name',
-                    defaultValue: 'Saad Hassan',
+                    defaultValue: 'Aastik Tripathi',
+                }),
+                tags: fields.array(fields.text({ label: 'Tag' }), {
+                    label: 'Tags',
+                    itemLabel: (props) => props.value,
+                }),
+                summary: fields.text({
+                    label: 'Short Summary / Excerpt',
+                    multiline: true,
+                }),
+                coverImage: fields.text({
+                    label: 'Cover Image URL or Path',
                 }),
                 readingTime: fields.text({
-                    label: 'Reading Time (e.g. 6 min read)',
+                    label: 'Estimated Reading Time',
                     defaultValue: '5 min read',
                 }),
-                publishDate: fields.date({
-                    label: 'Publish Date',
-                    defaultValue: { kind: 'today' },
-                }),
-                tags: fields.array(
-                    fields.text({ label: 'Tag Keyword' }),
-                    {
-                        label: 'Tags',
-                        itemLabel: props => props.value || 'New Tag',
-                    }
-                ),
                 content: fields.markdoc({
-                    label: 'Content',
-                    extension: 'md',
-                    options: {
-                        table: true,
-                        image: {
-                            directory: 'public/images/articles',
-                            publicPath: '/images/articles/',
-                        },
-                    },
-                    components: {
-                        wolfram: inline({
-                            label: 'Wolfram Demonstration',
-                            schema: {
-                                id: fields.text({ label: 'Demonstration ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        geogebra: inline({
-                            label: 'GeoGebra Applet',
-                            schema: {
-                                id: fields.text({ label: 'Material ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        youtube: inline({
-                            label: 'YouTube Video',
-                            schema: {
-                                id: fields.text({ label: 'Video ID or URL' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                    },
-                }),
-                references: fields.array(
-                    fields.object({
-                        title: fields.text({ label: 'Citation / Title (e.g. Annals of Mathematics, Vol. 42)' }),
-                        url: fields.url({ label: 'Link URL (Optional)', validation: { isRequired: false } }),
-                        details: fields.text({ label: 'Author / Journal Details (Optional)', validation: { isRequired: false } }),
-                    }),
-                    {
-                        label: 'Bibliography & References',
-                        itemLabel: props => props.fields.title.value || 'New Reference',
-                    }
-                ),
-            },
-        }),
-        courses: collection({
-            label: 'Courses',
-            slugField: 'title',
-            path: 'src/content/courses/*',
-            format: { data: 'yaml' },
-            schema: {
-                title: fields.slug({
-                    name: { label: 'Course Title' },
-                }),
-                subtitle: fields.text({ label: 'Subtitle / Short Description' }),
-                tag: fields.text({ label: 'Badge Tag (e.g. LIVE COHORT, SELF-PACED)', defaultValue: 'LIVE COHORT' }),
-                badgeColor: fields.select({
-                    label: 'Badge Color Theme',
-                    options: [
-                        { label: 'Yellow (Default)', value: 'bg-[#ebef70]' },
-                        { label: 'Indigo / Light Blue', value: 'bg-indigo-100' },
-                        { label: 'Emerald / Green', value: 'bg-emerald-100' },
-                        { label: 'Purple / Violet', value: 'bg-purple-100' },
-                    ],
-                    defaultValue: 'bg-[#ebef70]',
-                }),
-                emblem: fields.text({ label: 'Math Emblem Symbol (e.g. ∫, ⬡, ℵ₀, ∑)', defaultValue: '∫' }),
-                description: fields.text({ label: 'Full Course Description', multiline: true }),
-                price: fields.text({ label: 'Current Price (e.g. ₹14,999)' }),
-                oldPrice: fields.text({ label: 'Original Price (e.g. ₹24,999)', validation: { isRequired: false } }),
-                redirectLink: fields.text({ label: 'Redirect Link (e.g. Graphy course page)' }),
-                features: fields.array(
-                    fields.text({ label: 'Feature Highlight' }),
-                    {
-                        label: 'Feature Highlights List',
-                        itemLabel: props => props.value || 'New Highlight',
-                    }
-                ),
-                image: fields.image({
-                    label: 'Course Cover Image (Optional)',
-                    directory: 'public/images/courses',
-                    publicPath: '/images/courses/',
-                    validation: { isRequired: false }
+                    label: 'Article Body',
                 }),
             },
         }),
-        tutorials: collection({
-            label: 'Tutorials (Problem Solving Techniques)',
-            slugField: 'title',
-            path: 'src/content/tutorials/*/index',
+
+        career: collection({
+            label: 'Career Milestones',
+            slugField: 'company',
+            path: 'src/content/career/*',
             entryLayout: 'form',
+            columns: ['role', 'company', 'startDate', 'endDate', 'order'],
             format: { contentField: 'content' },
             schema: {
-                title: fields.slug({
-                    name: { label: 'Tutorial Title' },
+                role: fields.text({
+                    label: 'Role / Title',
                 }),
-                subtitle: fields.text({ label: 'Subtitle / Tagline' }),
-                category: fields.select({
-                    label: 'Category / Discipline',
+                company: fields.slug({
+                    name: { label: 'Company / Organization Slug' },
+                }),
+                companyUrl: fields.url({
+                    label: 'Company Website URL',
+                }),
+                location: fields.text({
+                    label: 'Location (e.g. Bengaluru / Remote)',
+                    defaultValue: 'Remote',
+                }),
+                startDate: fields.text({
+                    label: 'Start Date (e.g. Jan 2024)',
+                }),
+                endDate: fields.text({
+                    label: 'End Date (e.g. Present)',
+                    defaultValue: 'Present',
+                }),
+                current: fields.checkbox({
+                    label: 'Currently working here',
+                    defaultValue: false,
+                }),
+                type: fields.select({
+                    label: 'Engagement Type',
                     options: [
-                        { label: 'Combinatorics', value: 'Combinatorics' },
-                        { label: 'Algebra', value: 'Algebra' },
-                        { label: 'Number Theory', value: 'Number Theory' },
-                        { label: 'Geometry', value: 'Geometry' },
-                        { label: 'General Strategy', value: 'General Strategy' },
+                        { label: 'Full-time', value: 'Full-time' },
+                        { label: 'Part-time', value: 'Part-time' },
+                        { label: 'Contract', value: 'Contract' },
+                        { label: 'Freelance', value: 'Freelance' },
+                        { label: 'Open Source', value: 'Open Source' },
+                        { label: 'Education', value: 'Education' },
                     ],
-                    defaultValue: 'Combinatorics',
+                    defaultValue: 'Full-time',
                 }),
-                difficulty: fields.select({
-                    label: 'Difficulty Level',
-                    options: [
-                        { label: 'Introductory', value: 'Introductory' },
-                        { label: 'Intermediate', value: 'Intermediate' },
-                        { label: 'Advanced', value: 'Advanced' },
-                        { label: 'Olympiad', value: 'Olympiad' },
-                    ],
-                    defaultValue: 'Intermediate',
+                summary: fields.text({
+                    label: 'Role Summary',
+                    multiline: true,
                 }),
-                publishDate: fields.date({
-                    label: 'Publish Date',
-                    defaultValue: { kind: 'today' },
+                highlights: fields.array(fields.text({ label: 'Key Achievement' }), {
+                    label: 'Key Achievements',
+                    itemLabel: (props) => props.value,
                 }),
-                author: fields.text({
-                    label: 'Author Name',
-                    defaultValue: 'deMath Academic Team',
+                skills: fields.array(fields.text({ label: 'Skill or Tech' }), {
+                    label: 'Skills Used',
+                    itemLabel: (props) => props.value,
                 }),
-                icon: fields.text({ label: 'Emoji Icon (e.g. ⚡, 🏔️, 🕊️, 📈)', defaultValue: '⚡' }),
-                estimatedReadTime: fields.text({ label: 'Read Time (e.g. 15 min lesson)', defaultValue: '15 min lesson' }),
-                tags: fields.array(
-                    fields.text({ label: 'Tag Keyword' }),
-                    {
-                        label: 'Tags',
-                        itemLabel: props => props.value || 'New Tag',
-                    }
-                ),
+                order: fields.integer({
+                    label: 'Chronological Sort Order (1 = Most recent)',
+                    defaultValue: 1,
+                }),
                 content: fields.markdoc({
-                    label: 'Content (Core Theory & Strategies)',
-                    description: 'Introduction, core invariant definitions, pattern-recognition indicators, and standard workflow.',
-                    extension: 'md',
-                    options: {
-                        table: true,
-                        image: {
-                            directory: 'public/images/tutorials',
-                            publicPath: '/images/tutorials/',
-                        },
-                    },
-                    components: {
-                        wolfram: inline({
-                            label: 'Wolfram Demonstration',
-                            schema: {
-                                id: fields.text({ label: 'Demonstration ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        geogebra: inline({
-                            label: 'GeoGebra Applet',
-                            schema: {
-                                id: fields.text({ label: 'Material ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        youtube: inline({
-                            label: 'YouTube Video',
-                            schema: {
-                                id: fields.text({ label: 'Video ID or URL' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        tikz: block({
-                            label: 'TikZ Diagram',
-                            schema: {
-                                code: fields.text({ label: 'TikZ Code', multiline: true }),
-                                caption: fields.text({ label: 'Caption (Optional)', validation: { isRequired: false } }),
-                            },
-                        }),
-                    },
+                    label: 'Extended Notes / Context',
                 }),
             },
         }),
-        tutorialWorkedExamples: collection({
-            label: 'Worked Examples',
-            slugField: 'title',
-            path: 'src/content/tutorial-worked-examples/*',
-            entryLayout: 'content',
-            format: { contentField: 'solution' },
-            columns: ['tutorialSlug'],
-            schema: {
-                title: fields.slug({
-                    name: { label: 'Example Title' },
-                }),
-                tutorialSlug: fields.relationship({
-                    label: 'Parent Tutorial',
-                    description: 'Which tutorial does this worked example belong to?',
-                    collection: 'tutorials',
-                }),
-                statement: fields.text({
-                    label: 'Problem Statement',
-                    description: 'The problem being solved. LaTeX math: inline $...$ and display $$...$$.',
-                    multiline: true,
-                }),
-                insight: fields.text({
-                    label: 'Key Insight / Takeaway (Optional)',
-                    validation: { isRequired: false },
-                }),
-                solution: fields.markdoc({
-                    label: 'Full Solution & Proof',
-                    description: 'Step-by-step solution. Full markdown toolbar — paste/upload images, embed YouTube, GeoGebra, TikZ.',
-                    extension: 'md',
-                    options: {
-                        table: true,
-                        image: {
-                            directory: 'public/images/tutorials',
-                            publicPath: '/images/tutorials/',
-                        },
-                    },
-                    components: {
-                        wolfram: inline({
-                            label: 'Wolfram Demonstration',
-                            schema: {
-                                id: fields.text({ label: 'Demonstration ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        geogebra: inline({
-                            label: 'GeoGebra Applet',
-                            schema: {
-                                id: fields.text({ label: 'Material ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        youtube: inline({
-                            label: 'YouTube Video',
-                            schema: {
-                                id: fields.text({ label: 'Video ID or URL' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        tikz: block({
-                            label: 'TikZ Diagram',
-                            schema: {
-                                code: fields.text({ label: 'TikZ Code', multiline: true }),
-                                caption: fields.text({ label: 'Caption (Optional)', validation: { isRequired: false } }),
-                            },
-                        }),
-                    },
-                }),
-            },
-        }),
-        tutorialPracticeProblems: collection({
-            label: 'Practice Problems',
-            slugField: 'title',
-            path: 'src/content/tutorial-practice-problems/*',
-            entryLayout: 'content',
-            format: { contentField: 'solution' },
-            columns: ['tutorialSlug', 'difficulty'],
-            schema: {
-                title: fields.slug({
-                    name: { label: 'Problem Title' },
-                }),
-                tutorialSlug: fields.relationship({
-                    label: 'Parent Tutorial',
-                    description: 'Which tutorial does this practice problem belong to?',
-                    collection: 'tutorials',
-                }),
-                difficulty: fields.select({
-                    label: 'Difficulty Level',
-                    options: [
-                        { label: 'Introductory', value: 'Introductory' },
-                        { label: 'Intermediate', value: 'Intermediate' },
-                        { label: 'Advanced', value: 'Advanced' },
-                        { label: 'Olympiad', value: 'Olympiad' },
-                    ],
-                    defaultValue: 'Intermediate',
-                }),
-                statement: fields.text({
-                    label: 'Problem Statement',
-                    description: 'LaTeX math: inline $...$ and display $$...$$.',
-                    multiline: true,
-                }),
-                hint1: fields.text({
-                    label: 'Hint 1 — Initial Observation (Optional)',
-                    multiline: true,
-                    validation: { isRequired: false },
-                }),
-                hint2: fields.text({
-                    label: 'Hint 2 — Identifying the Invariant (Optional)',
-                    multiline: true,
-                    validation: { isRequired: false },
-                }),
-                hint3: fields.text({
-                    label: 'Hint 3 — Final Reduction (Optional)',
-                    multiline: true,
-                    validation: { isRequired: false },
-                }),
-                solution: fields.markdoc({
-                    label: 'Complete Solution & Proof',
-                    description: 'Full solution. Paste/upload images, embed YouTube, GeoGebra, TikZ. Everything optional.',
-                    extension: 'md',
-                    options: {
-                        table: true,
-                        image: {
-                            directory: 'public/images/tutorials',
-                            publicPath: '/images/tutorials/',
-                        },
-                    },
-                    components: {
-                        wolfram: inline({
-                            label: 'Wolfram Demonstration',
-                            schema: {
-                                id: fields.text({ label: 'Demonstration ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        geogebra: inline({
-                            label: 'GeoGebra Applet',
-                            schema: {
-                                id: fields.text({ label: 'Material ID' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        youtube: inline({
-                            label: 'YouTube Video',
-                            schema: {
-                                id: fields.text({ label: 'Video ID or URL' }),
-                                title: fields.text({ label: 'Title' }),
-                            },
-                        }),
-                        tikz: block({
-                            label: 'TikZ Diagram',
-                            schema: {
-                                code: fields.text({ label: 'TikZ Code', multiline: true }),
-                                caption: fields.text({ label: 'Caption (Optional)', validation: { isRequired: false } }),
-                            },
-                        }),
-                    },
-                }),
-            },
-        }),
-    },
-    ui: {
-        navigation: {
-            'Problems & Categories': ['problems', 'categories'],
-            'Articles': ['articles'],
-            'Courses': ['courses'],
-            'Tutorials': ['tutorials', 'tutorialWorkedExamples', 'tutorialPracticeProblems'],
-        },
     },
 });

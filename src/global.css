@@ -2,185 +2,168 @@
 
 @theme {
   --font-sans: 'Inter', sans-serif;
+  --font-display: 'Poppins', 'Inter', sans-serif;
 }
 
-.font-sketch {
-  font-family: 'Poppins', var(--font-sans, 'Inter', sans-serif);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+:root {
+  --color-bg: #0d0f14;
+  --color-surface: #14171f;
+  --color-surface-elevated: #1a1e28;
+  --color-border: #2e3545;
+  --color-yellow: #e5b842;
+  --color-yellow-hover: #f0c353;
+  --color-text-primary: #e6e8ec;
+  --color-text-secondary: #9aa1b0;
+  --color-text-muted: #6b7280;
 }
-
-.font-poppins {
-  font-family: 'Poppins', var(--font-sans, 'Inter', sans-serif);
-}
-
-/* ⚡ Standardized Fluid Typographic Scale Across All Pages */
-.hero-heading {
-  font-size: clamp(1.5rem, 2.5vw + 0.75rem, 2.75rem);
-  line-height: 1.2;
-  letter-spacing: -0.02em;
-}
-
-.section-heading {
-  font-size: clamp(1.25rem, 1.8vw + 0.5rem, 2.125rem);
-  line-height: 1.25;
-  letter-spacing: -0.015em;
-}
-
-.card-heading {
-  font-size: clamp(1.125rem, 1vw + 0.4rem, 1.375rem);
-  line-height: 1.35;
-  letter-spacing: -0.01em;
-}
-
-
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  color-scheme: dark;
 }
 
-/* Smooth highlight effect when jumping to a specific reference target (#ref-1, #ref-2) */
-:target {
-  scroll-margin-top: 5rem;
-  animation: refHighlight 2s ease-in-out;
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  overflow-x: hidden;
 }
 
-@keyframes refHighlight {
-  0% {
-    background-color: rgba(235, 239, 112, 0.6);
-    border-color: #2a2a2a;
-    transform: scale(1.01);
-  }
-  100% {
-    background-color: rgba(249, 250, 251, 1);
-    border-color: #e5e7eb;
-    transform: scale(1);
-  }
+/* ⚡ Fluid Typographic Scale */
+.hero-heading {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 3.5vw + 1rem, 3.5rem);
+  line-height: 1.18;
+  font-weight: 750;
+  letter-spacing: -0.025em;
 }
 
-/* ⚡ Universal Neo-Brutalist Image & Diagram Styling */
-.prose img,
-.markdown-content img,
-.solution-content img,
-.problem-content img,
-.tutorial-content img,
-article .content-body img,
-article .prose img,
-.solution-display-math img,
-figure > img {
-  border: 3px solid #2a2a2a;
-  border-radius: 0.75rem; /* 12px / rounded-xl */
-  box-shadow: 4px 4px 0px 0px #2a2a2a;
-  background-color: #ffffff;
-  padding: 0.375rem;
-  max-width: 100%;
-  height: auto;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
+.section-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.2vw + 0.5rem, 2.25rem);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.card-heading {
+  font-family: var(--font-display);
+  font-size: clamp(1.1rem, 1.1vw + 0.3rem, 1.35rem);
+  line-height: 1.35;
+  font-weight: 650;
+  letter-spacing: -0.015em;
+}
+
+/* ⚡ The Signature Neo-Brutalist Blocks with Visible Solid Shadows */
+.neo-box {
+  background-color: #161922;
+  border: 2px solid #2e3545;
+  border-radius: 0.75rem;
+  box-shadow: 4px 4px 0px 0px #e5b842;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s cubic-bezier(0.2, 0, 0, 1), border-color 0.2s ease;
+}
+
+.neo-box:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px 0px #e5b842;
+  border-color: #e5b842;
+}
+
+.neo-frame {
+  background-color: #14171f;
+  border: 2.5px solid #2e3545;
+  border-radius: 1.5rem;
+  box-shadow: 6px 6px 0px 0px #e5b842;
+  transition: box-shadow 0.2s ease;
 }
 
 @media (min-width: 640px) {
-  .prose img,
-  .markdown-content img,
-  .solution-content img,
-  .problem-content img,
-  .tutorial-content img,
-  article .content-body img,
-  article .prose img,
-  .solution-display-math img,
-  figure > img {
-    box-shadow: 6px 6px 0px 0px #2a2a2a;
-    padding: 0.5rem;
+  .neo-frame {
+    border-width: 3px;
+    box-shadow: 8px 8px 0px 0px #e5b842;
   }
 }
 
-figure {
-  margin-top: 1.5rem;
-  margin-bottom: 1.5rem;
+.neo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
-figcaption {
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.75rem;
-  line-height: 1rem;
-  color: #737373;
-  font-style: italic;
-  text-align: center;
-  margin-top: 0.625rem;
+.neo-btn-primary {
+  background-color: #e5b842;
+  color: #0d0f14;
+  border: 2px solid #000000;
+  box-shadow: 3px 3px 0px 0px #ffffff;
 }
 
-/* ⚡ KaTeX Math Scale & Baseline Alignments */
-.katex {
-  font-size: 1em !important;
-  color: #1a1a1a !important;
+.neo-btn-primary:hover {
+  background-color: #f0c353;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px 0px #ffffff;
 }
 
-.katex-display {
-  font-size: 1.05em !important;
-  margin: 0.75rem 0 !important;
+.neo-btn-primary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px 0px #ffffff;
 }
 
-@media (max-width: 639px) {
-  .katex-display {
-    font-size: 0.95em !important;
-  }
+.neo-btn-secondary {
+  background-color: #1a1e28;
+  color: #e6e8ec;
+  border: 2px solid #2e3545;
+  box-shadow: 3px 3px 0px 0px #e5b842;
 }
 
-/* ⚡ Mobile shadow scaling overrides for smartphone screens (< 768px) */
-@media (max-width: 767px) {
-  .shadow-\[8px_8px_0px_0px_\#2a2a2a\] {
-    box-shadow: 4px 4px 0px 0px #2a2a2a !important;
-  }
-  .shadow-\[8px_8px_0px_0px_\#ebef70\] {
-    box-shadow: 4px 4px 0px 0px #ebef70 !important;
-  }
-
-  .shadow-\[8px_8px_0px_0px_\#8f8f8f\] {
-    box-shadow: 4px 4px 0px 0px #8f8f8f !important;
-  }
-  .shadow-\[6px_6px_0px_0px_\#2a2a2a\] {
-    box-shadow: 3px 3px 0px 0px #2a2a2a !important;
-  }
-  .shadow-\[5px_5px_0px_0px_\#2a2a2a\] {
-    box-shadow: 2px 2px 0px 0px #2a2a2a !important;
-  }
-  .shadow-\[4px_4px_0px_0px_\#2a2a2a\] {
-    box-shadow: 2px 2px 0px 0px #2a2a2a !important;
-  }
-  .shadow-\[4px_4px_0px_0px_\#ffffff\] {
-    box-shadow: 2px 2px 0px 0px #ffffff !important;
-  }
-  .shadow-\[3px_3px_0px_0px_\#8f8f8f\] {
-    box-shadow: 1.5px 1.5px 0px 0px #8f8f8f !important;
-  }
-  .shadow-\[3px_3px_0px_0px_\#2a2a2a\] {
-    box-shadow: 1.5px 1.5px 0px 0px #2a2a2a !important;
-  }
-  .shadow-\[3px_3px_0px_\#2a2a2a\] {
-    box-shadow: 1.5px 1.5px 0px #2a2a2a !important;
-  }
-  .shadow-\[2px_2px_0px_0px_\#2a2a2a\] {
-    box-shadow: 1px 1px 0px 0px #2a2a2a !important;
-  }
-  .shadow-\[2px_2px_0px_\#2a2a2a\] {
-    box-shadow: 1px 1px 0px #2a2a2a !important;
-  }
+.neo-btn-secondary:hover {
+  background-color: #202532;
+  border-color: #e5b842;
+  color: #e5b842;
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px 0px #e5b842;
 }
 
-/* Respect user's motion preferences — only disable scroll snap, not animations */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto !important;
-  }
+.neo-btn-secondary:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px 0px #e5b842;
 }
 
-/* ── Global Scroll-Reveal System ── */
+.neo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.725rem;
+  font-weight: 700;
+  border-radius: 0.375rem;
+  border: 1.5px solid #2e3545;
+  background-color: #161922;
+  color: #e6e8ec;
+  box-shadow: 2px 2px 0px 0px #e5b842;
+}
+
+.neo-badge-yellow {
+  background-color: #e5b842;
+  color: #0d0f14;
+  border: 1.5px solid #000000;
+  box-shadow: 2px 2px 0px 0px #ffffff;
+}
+
+/* ⚡ Scroll-reveal Animation Utility */
 [data-reveal] {
   opacity: 0;
-  transform: translateY(28px);
-  transition: opacity 0.85s cubic-bezier(0.22, 1, 0.36, 1),
-              transform 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+  transform: translateY(20px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-reveal].in-view {
@@ -188,5 +171,112 @@ figcaption {
   transform: translateY(0);
 }
 
+/* ⚡ Markdown / Prose Styling */
+.markdown-content {
+  color: #c9ced8;
+  line-height: 1.8;
+  font-size: 1.025rem;
+}
 
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4 {
+  color: #e6e8ec;
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
 
+.markdown-content h2 {
+  font-size: 1.5rem;
+  border-bottom: 2px solid #2e3545;
+  padding-bottom: 0.5rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.25rem;
+}
+
+.markdown-content p {
+  margin-bottom: 1.25rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content a {
+  color: #e5b842;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+}
+
+.markdown-content a:hover {
+  color: #f0c353;
+}
+
+.markdown-content blockquote {
+  border-left: 3px solid #e5b842;
+  background-color: #161922;
+  padding: 0.75rem 1.25rem;
+  margin: 1.5rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  color: #c9ced8;
+  font-style: italic;
+}
+
+.markdown-content code {
+  background-color: #1a1e28;
+  color: #e5b842;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  border: 1px solid #2e3545;
+}
+
+.markdown-content pre {
+  background-color: #14171f;
+  border: 2px solid #2e3545;
+  box-shadow: 4px 4px 0px 0px #e5b842;
+  border-radius: 0.5rem;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.markdown-content pre code {
+  background: transparent;
+  padding: 0;
+  border: none;
+  color: #e6e8ec;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}

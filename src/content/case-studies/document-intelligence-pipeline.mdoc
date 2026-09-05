@@ -1,0 +1,32 @@
+---
+title: Intelligent Multimodal Document Extraction Pipeline
+subtitle: Replacing manual data entry with vision-language models and deterministic validation heuristics.
+clientOrProject: OmniLogistics Global
+role: Lead AI & Backend Architect
+timeline: 2.5 Months (Q1 2025)
+summary: Engineered a high-throughput OCR and vision-language extraction engine processing over 50,000 multi-format bills of lading daily with 99.4% field precision.
+impactHighlights:
+  - 85% reduction in manual document verification hours
+  - Processed 50,000+ daily unstructured invoices and shipping manifests
+  - Real-time schema validation ensuring 100% compliance with customs standards
+techStack:
+  - Python
+  - FastAPI
+  - PyTorch
+  - LangChain
+  - Qdrant Vector DB
+  - Next.js
+featured: true
+publishDate: 2025-01-20
+---
+
+## Executive Summary
+
+Global freight operators grapple with hundreds of thousands of unstructured PDFs, scans, and hand-marked cargo manifests. This project introduced an autonomous multi-stage parsing pipeline that blends high-speed spatial OCR with structured LLM extraction.
+
+## System Architecture
+
+The pipeline processes files through a three-tiered pipeline:
+1. **Preprocessing & Bounding Box Extraction**: Normalizing orientation, deskewing, and segmenting tables.
+2. **Contextual Semantic Extraction**: Utilizing Vision-Language models with strict JSON schema constrained decoding.
+3. **Deterministic Business Rule Validation**: Comparing extracted totals against line items and tariff lookup codes before committing to the ERP.
