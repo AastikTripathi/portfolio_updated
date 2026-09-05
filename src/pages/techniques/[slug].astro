@@ -1,0 +1,1083 @@
+---
+// src/pages/techniques/[slug].astro
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SEOJsonLd from '../../components/SEOJsonLd.astro';
+
+
+export async function getStaticPaths() {
+  const collectionTutorials = await getCollection('tutorials');
+  
+  return collectionTutorials.map(t => ({
+    params: { slug: t.id.replace(/\/index$/, '') },
+    props: { tutorial: t }
+  }));
+}
+
+const { slug } = Astro.params;
+const { tutorial } = Astro.props;
+
+// Fetch sub-collections filtered by the current tutorial slug
+const allWorkedExamples = await getCollection('tutorialWorkedExamples');
+const slugWorkedExamples = allWorkedExamples
+  .filter(e => e.data.tutorialSlug === slug || e.id.startsWith(slug + '/'))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+const allPracticeProblems = await getCollection('tutorialPracticeProblems');
+const slugPracticeProblems = allPracticeProblems
+  .filter(e => e.data.tutorialSlug === slug || e.id.startsWith(slug + '/'))
+  .sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+
+function buildEmbedHtml(tagType: string, id: string, query: string, url: string, title: string): string {
+  if (tagType === 'youtube') {
+    const ytId = id || url;
+    return `<div class="my-6 bg-white border-[3px] border-[#2a2a2a] rounded-xl p-3 shadow-[6px_6px_0px_0px_#2a2a2a]"><div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-neutral-200 font-mono text-xs font-bold text-[#2a2a2a]"><span class="px-2 py-0.5 bg-red-100 border border-red-300 text-red-700 rounded text-[10px] font-black uppercase">Video: ${title}</span></div><div class="relative w-full overflow-hidden rounded-lg border-2 border-[#2a2a2a] bg-black" style="padding-top:56.25%"><iframe src="https://www.youtube-nocookie.com/embed/${ytId}" title="${title}" class="absolute top-0 left-0 w-full h-full" allowfullscreen loading="lazy"></iframe></div></div>`;
+  } else if (tagType === 'wolfram') {
+    const src = id ? `https://www.wolframcloud.com/obj/demonstrations/${id}?_embed=1` : `https://www.wolframalpha.com/widget/input/?input=${encodeURIComponent(query)}&output=popup`;
+    const directLink = id ? `https://demonstrations.wolfram.com/${id}/` : '#';
+    return `<div class="my-6 bg-white border-[3px] border-[#2a2a2a] rounded-xl p-3 shadow-[6px_6px_0px_0px_#2a2a2a]"><div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-neutral-200 font-mono text-xs font-bold text-[#2a2a2a]"><span class="px-2 py-0.5 bg-amber-100 border border-amber-300 text-amber-800 rounded text-[10px] font-black uppercase">Wolfram Demo: ${title}</span></div><div class="w-full overflow-hidden rounded-lg border-2 border-[#2a2a2a] bg-neutral-50 p-2"><iframe src="${src}" title="${title}" class="w-full h-[500px] border-0 bg-white" loading="lazy"></iframe><div class="pt-2 text-center"><a href="${directLink}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-xs font-mono font-bold text-indigo-600 hover:underline">Open original Wolfram Demonstration ↗</a></div></div></div>`;
+  } else if (tagType === 'geogebra') {
+    return `<div class="my-6 bg-white border-[3px] border-[#2a2a2a] rounded-xl p-3 shadow-[6px_6px_0px_0px_#2a2a2a]"><div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-neutral-200 font-mono text-xs font-bold text-[#2a2a2a]"><span class="px-2 py-0.5 bg-sky-100 border border-sky-300 text-sky-800 rounded text-[10px] font-black uppercase">GeoGebra: ${title}</span></div><div class="w-full overflow-hidden rounded-lg border-2 border-[#2a2a2a] bg-white"><iframe src="https://www.geogebra.org/material/iframe/id/${id}/width/800/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/true/asb/false/sri/true/rc/false/ld/false/sdz/true/ctl/false" title="${title}" class="w-full h-[450px] border-0" loading="lazy"></iframe></div></div>`;
+  } else if (tagType === 'audio') {
+    const targetUrl = url || id;
+    let embedInner = '';
+    if (targetUrl.includes('spotify.com')) {
+      const spotifyEmbedUrl = targetUrl
+        .replace('spotify.com/episode/', 'spotify.com/embed/episode/')
+        .replace('spotify.com/track/', 'spotify.com/embed/track/')
+        .replace('spotify.com/show/', 'spotify.com/embed/show/');
+      embedInner = `<iframe src="${spotifyEmbedUrl}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" class="rounded-md"></iframe>`;
+    } else {
+      embedInner = `<audio controls class="w-full"><source src="${targetUrl}" /></audio>`;
+    }
+    return `<div class="my-6 bg-white border-[3px] border-[#2a2a2a] rounded-xl p-3 shadow-[6px_6px_0px_0px_#2a2a2a]"><div class="flex items-center justify-between pb-2 mb-2 border-b-2 border-dashed border-neutral-200 font-mono text-xs font-bold text-[#2a2a2a]"><span class="px-2 py-0.5 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded text-[10px] font-black uppercase">Audio: ${title}</span></div>${embedInner}</div>`;
+  }
+  return '';
+}
+
+function buildTikzHtml(rawCode: string, caption?: string): string {
+  let cleanCode = rawCode.trim();
+  cleanCode = cleanCode.replace(/\\n(?!(?:ode|ew|umber|ewline)\b)/g, '\n');
+  cleanCode = cleanCode
+    .replaceAll('\\\\vdots', '\\vdots')
+    .replaceAll('\\\\cdots', '\\cdots')
+    .replaceAll('\\\\ldots', '\\ldots')
+    .replaceAll('\\\\ddots', '\\ddots');
+
+  const tikzMatch = cleanCode.match(/\\begin{(?:tikzpicture|pgfpicture)}[\s\S]*?\\end{(?:tikzpicture|pgfpicture)}/);
+  if (tikzMatch) {
+    cleanCode = tikzMatch[0];
+  } else if (!cleanCode.startsWith('\\begin{tikzpicture}')) {
+    cleanCode = `\\begin{tikzpicture}\n${cleanCode}\n\\end{tikzpicture}`;
+  }
+
+  const captionHtml = caption
+    ? `<p class="text-xs text-neutral-500 italic mt-2.5 text-center max-w-lg font-mono">${caption}</p>`
+    : '';
+
+  return `<div class="tikz-diagram-wrapper my-6 flex flex-col items-center justify-center p-3 sm:p-5 bg-white border-[3px] border-[#2a2a2a] rounded-xl shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[6px_6px_0px_0px_#2a2a2a] max-w-full overflow-x-auto"><div class="tikz-canvas text-stone-900 max-w-full overflow-x-auto p-1 sm:p-2"><script type="text/tikz">\n${cleanCode}\n<\/script></div>${captionHtml}</div>`;
+}
+
+
+
+function renderSolutionSafe(raw: string): string {
+  if (!raw?.trim()) return '';
+
+  const tikzPlaceholders: string[] = [];
+
+  let text = raw.replace(/```tikz\s*(?:caption="([^"]*)")?\s*\n([\s\S]*?)```/gi, (_match, caption, code) => {
+    const idx = tikzPlaceholders.length;
+    tikzPlaceholders.push(buildTikzHtml(code, caption || ''));
+    return `\n\nTIKZBLOCK_${idx}\n\n`;
+  });
+
+  text = text.replace(/\\begin{(?:tikzpicture|pgfpicture)}[\s\S]*?\\end{(?:tikzpicture|pgfpicture)}/g, (match) => {
+    const idx = tikzPlaceholders.length;
+    tikzPlaceholders.push(buildTikzHtml(match));
+    return `\n\nTIKZBLOCK_${idx}\n\n`;
+  });
+
+  const topSegments = text.split(/(\$\$[\s\S]*?\$\$)/g);
+
+  let html = '';
+  for (const seg of topSegments) {
+    if (seg.startsWith('$$') && seg.endsWith('$$') && seg.length > 4) {
+      const safeSeg = seg.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      html += `<div class="solution-display-math">${safeSeg}</div>\n`;
+    } else if (seg.trim()) {
+      html += processTextSegment(seg);
+    }
+  }
+
+  tikzPlaceholders.forEach((blockHtml, i) => {
+    const token = `TIKZBLOCK_${i}`;
+    html = html.replaceAll(`<p>${token}</p>`, blockHtml).replaceAll(token, blockHtml);
+  });
+
+  return html;
+}
+
+/** Render a table markdown / markdoc block into styled HTML */
+function buildTableHtml(rawTable: string): string {
+  let clean = rawTable
+    .replace(/{%\s*table\s*%}/gi, '')
+    .replace(/{%\s*\/table\s*%}/gi, '')
+    .trim();
+
+  let headerRow: string[] | null = null;
+  const bodyRows: string[][] = [];
+
+  // Check if it's a pipe table (| a | b |)
+  const isPipeTable = clean.split('\n').some(l => l.trim().startsWith('|'));
+
+  if (isPipeTable) {
+    const lines = clean.split('\n').map(l => l.trim()).filter(l => l.length > 0 && l.startsWith('|'));
+    for (const line of lines) {
+      if (/^\|[\s\-:|]+\|$/.test(line)) {
+        continue;
+      }
+      const content = line.startsWith('|') ? line.slice(1) : line;
+      const trimmedEnd = content.endsWith('|') ? content.slice(0, -1) : content;
+      const cells = trimmedEnd.split('|').map(c => c.trim());
+
+      if (headerRow === null) {
+        headerRow = cells;
+      } else {
+        bodyRows.push(cells);
+      }
+    }
+  } else {
+    // Markdoc list table syntax: rows separated by '---', cells start with '-' or '*'
+    const rowBlocks = clean.split(/\n\s*---\s*\n|\n\s*\*\*\*\s*\n/);
+    for (const block of rowBlocks) {
+      const cells: string[] = [];
+      const lines = block.split('\n');
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+        if (/^[-*]\s+/.test(line)) {
+          cells.push(line.replace(/^[-*]\s+/, '').trim());
+        } else if (line !== '' && cells.length > 0) {
+          cells[cells.length - 1] += ' ' + line;
+        }
+      }
+      if (cells.length > 0) {
+        if (headerRow === null) {
+          headerRow = cells;
+        } else {
+          bodyRows.push(cells);
+        }
+      }
+    }
+  }
+
+  if (!headerRow || headerRow.length === 0) return '';
+
+  let tableHtml = '<div class="my-6 overflow-x-auto rounded-lg border border-neutral-200 bg-white shadow-xs">';
+  tableHtml += '<table class="w-full text-left border-collapse text-xs sm:text-sm">';
+  
+  tableHtml += '<thead class="bg-neutral-50/90 border-b border-neutral-200">';
+  tableHtml += '<tr>';
+  for (const cell of headerRow) {
+    tableHtml += `<th class="px-4 py-2.5 font-mono font-bold text-xs uppercase tracking-wider text-[#2a2a2a] border-r border-neutral-200 last:border-r-0">${applyInline(cell)}</th>`;
+  }
+  tableHtml += '</tr></thead>';
+
+  tableHtml += '<tbody class="divide-y divide-neutral-200">';
+  for (const row of bodyRows) {
+    tableHtml += '<tr class="hover:bg-neutral-50/60 transition-colors">';
+    for (let c = 0; c < headerRow.length; c++) {
+      const cellContent = row[c] !== undefined ? row[c] : '';
+      tableHtml += `<td class="px-4 py-2.5 text-[#2a2a2a] border-r border-neutral-100 last:border-r-0">${applyInline(cellContent)}</td>`;
+    }
+    tableHtml += '</tr>';
+  }
+  tableHtml += '</tbody></table></div>';
+
+  return tableHtml;
+}
+
+function processTextSegment(text: string): string {
+  let cleanText = text.replace(/{%\s*(youtube|wolfram|geogebra|audio)\b[\s\S]*?%}/gi, (match) => {
+    return match.replace(/\s+/g, ' ').replace('/%}', '%}').replace(/%}/, ' %}{% /' + match.match(/youtube|wolfram|geogebra|audio/i)![0] + ' %}');
+  });
+
+  // Extract Markdoc {% table %} ... {% /table %} blocks
+  const tablePlaceholders: string[] = [];
+  cleanText = cleanText.replace(/{%\s*table\s*%}[\s\S]*?{%\s*\/table\s*%}/gi, (match) => {
+    const idx = tablePlaceholders.length;
+    tablePlaceholders.push(buildTableHtml(match));
+    return `\n\nTABLEBLOCK_${idx}\n\n`;
+  });
+
+  const inlineMath: string[] = [];
+  let s = cleanText.replace(/\$(?!\$)([^\$\n]+?)\$/g, (match) => {
+    const token = `__MATH_SLOT_${inlineMath.length}__`;
+    inlineMath.push(match);
+    return token;
+  });
+
+  const rawLines = s.split('\n');
+  const out: string[] = [];
+  let inUl = false;
+  let inOl = false;
+  let inBlockquote = false;
+
+  const closeLists = () => {
+    if (inUl) { out.push('</ul>'); inUl = false; }
+    if (inOl) { out.push('</ol>'); inOl = false; }
+    if (inBlockquote) { out.push('</blockquote>'); inBlockquote = false; }
+  };
+
+  for (let i = 0; i < rawLines.length; i++) {
+    const raw = rawLines[i];
+    const line = raw.trimEnd();
+    const trimmed = line.trimStart();
+
+    // Markdoc embed tags
+    if (/{%\s*(youtube|wolfram|geogebra|audio)\s+[^%]+%}/i.test(trimmed)) {
+      closeLists();
+      const match = trimmed.match(/{%\s*(youtube|wolfram|geogebra|audio)\s+([^%]+)%}/i);
+      if (match) {
+        const tagType = match[1].toLowerCase();
+        const rawAttrs = match[2];
+        const idMatch = rawAttrs.match(/id="([^"]+)"/) || rawAttrs.match(/#([^\s"]+)/);
+        const queryMatch = rawAttrs.match(/query="([^"]+)"/);
+        const urlMatch = rawAttrs.match(/url="([^"]+)"/);
+        const titleMatch = rawAttrs.match(/title="([^"]+)"/);
+
+        const id = idMatch ? idMatch[1] : '';
+        const query = queryMatch ? queryMatch[1] : '';
+        const url = urlMatch ? urlMatch[1] : '';
+        const title = titleMatch ? titleMatch[1] : 'Interactive Content';
+
+        out.push(buildEmbedHtml(tagType, id, query, url, title));
+        continue;
+      }
+    }
+
+    // Markdown Images
+    const imgMatch = trimmed.match(/^!\[(.*?)\]\((.*?)\)$/);
+    if (imgMatch) {
+      closeLists();
+      const alt = imgMatch[1] || '';
+      const url = imgMatch[2] || '';
+      const captionHtml = alt
+        ? `<figcaption class="text-xs font-mono text-neutral-500 italic mt-2.5 text-center">${alt}</figcaption>`
+        : '';
+      out.push(`<figure class="my-6 flex flex-col items-center justify-center p-3 sm:p-4 bg-white border-[3px] border-[#2a2a2a] rounded-xl shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[6px_6px_0px_0px_#2a2a2a] max-w-full overflow-hidden"><img src="${url}" alt="${alt}" class="max-w-full h-auto rounded-lg mx-auto block" loading="lazy" />${captionHtml}</figure>`);
+      continue;
+    }
+
+    // Markdown Tables (lines starting with '|')
+    if (trimmed.startsWith('|') && (trimmed.endsWith('|') || trimmed.includes('|'))) {
+      closeLists();
+      const tableLines: string[] = [];
+      while (i < rawLines.length) {
+        const curTrimmed = rawLines[i].trim();
+        if (curTrimmed.startsWith('|')) {
+          tableLines.push(curTrimmed);
+          i++;
+        } else {
+          break;
+        }
+      }
+      i--; // rewind one because loop increments
+      out.push(buildTableHtml(tableLines.join('\n')));
+      continue;
+    }
+
+    // Headings
+    if (/^####\s+/.test(trimmed)) {
+      closeLists();
+      out.push(`<h4 class="font-bold text-[#1a1a1a] text-xs sm:text-sm mt-4 mb-2 tracking-tight uppercase">${applyInline(trimmed.replace(/^####\s+/, ''))}</h4>`);
+      continue;
+    }
+    if (/^###\s+/.test(trimmed)) {
+      closeLists();
+      out.push(`<h3 class="font-sketch font-bold text-[#1a1a1a] text-sm sm:text-lg mt-5 mb-2.5 border-b-2 border-dashed border-neutral-300 pb-1 tracking-tight">${applyInline(trimmed.replace(/^###\s+/, ''))}</h3>`);
+      continue;
+    }
+    if (/^##\s+/.test(trimmed)) {
+      closeLists();
+      out.push(`<h2 class="font-sketch font-bold text-[#1a1a1a] text-base sm:text-xl mt-7 mb-3 border-b-2 border-[#2a2a2a] pb-1.5 tracking-tight">${applyInline(trimmed.replace(/^##\s+/, ''))}</h2>`);
+      continue;
+    }
+    if (/^#\s+/.test(trimmed)) {
+      closeLists();
+      out.push(`<h1 class="font-sketch font-bold text-[#1a1a1a] text-lg sm:text-2xl mt-8 mb-4 tracking-tight">${applyInline(trimmed.replace(/^#\s+/, ''))}</h1>`);
+      continue;
+    }
+
+    // Blockquotes (> text)
+    if (/^>\s+/.test(trimmed)) {
+      if (!inBlockquote) { 
+        closeLists(); 
+        out.push('<blockquote class="my-4 p-3.5 sm:p-4 bg-amber-50/60 border-l-4 border-[#2a2a2a] rounded-r-xl font-mono text-xs sm:text-sm text-neutral-800 space-y-1 shadow-[2px_2px_0px_rgba(0,0,0,0.05)]">'); 
+        inBlockquote = true; 
+      }
+      out.push(`<p>${applyInline(trimmed.replace(/^>\s+/, ''))}</p>`);
+      continue;
+    }
+    if (inBlockquote) { out.push('</blockquote>'); inBlockquote = false; }
+
+    // Ordered Lists (1. 2. 3.) — Stacked layout so content sits cleanly below the number
+    const olMatch = trimmed.match(/^(\d+)\.\s+(.*)$/);
+    if (olMatch) {
+      if (inUl) { out.push('</ul>'); inUl = false; }
+      if (!inOl) { out.push('<ol class="my-4 space-y-3.5 pl-0">'); inOl = true; }
+      const num = olMatch[1];
+      const itemContent = olMatch[2];
+      out.push(`<li class="space-y-1 text-xs sm:text-sm font-sans leading-relaxed text-neutral-800"><div><span class="inline-flex w-5 h-5 sm:w-6 sm:h-6 rounded bg-[#2a2a2a] text-white font-mono font-bold text-[10px] sm:text-xs items-center justify-center shadow-[1px_1px_0px_#8f8f8f] select-none">${num}</span></div><div class="pt-0.5">${applyInline(itemContent)}</div></li>`);
+      continue;
+    }
+    if (inOl) { out.push('</ol>'); inOl = false; }
+
+    // Unordered Lists (- or *)
+    if (/^[-*]\s+/.test(trimmed)) {
+      if (inOl) { out.push('</ol>'); inOl = false; }
+      if (!inUl) { out.push('<ul class="my-3 space-y-2 pl-0.5">'); inUl = true; }
+      out.push(`<li class="flex items-start gap-2 sm:gap-2.5 text-xs sm:text-sm font-sans leading-relaxed text-neutral-800"><span class="text-[9px] sm:text-xs text-[#2a2a2a] mt-1 select-none font-black">■</span><div class="flex-1">${applyInline(trimmed.replace(/^[-*]\s+/, ''))}</div></li>`);
+      continue;
+    }
+    if (inUl) { out.push('</ul>'); inUl = false; }
+
+    if (trimmed === '') {
+      closeLists();
+      out.push('');
+      continue;
+    }
+
+    out.push(applyInline(trimmed));
+  }
+  closeLists();
+
+  let html = '';
+  let para: string[] = [];
+  const flushPara = () => {
+    if (para.length > 0) {
+      html += `<p class="prose-p">${para.join(' ')}</p>\n`;
+      para = [];
+    }
+  };
+
+  for (const line of out) {
+    if (/^<(h[1-6]|ul|ol|li|div|figure|blockquote|table)/i.test(line)) {
+      flushPara();
+      html += line + '\n';
+    } else if (line === '') {
+      flushPara();
+    } else {
+      para.push(line);
+    }
+  }
+  flushPara();
+
+  // Restore table placeholders
+  tablePlaceholders.forEach((tblHtml, i) => {
+    const token = `TABLEBLOCK_${i}`;
+    html = html.replaceAll(`<p>${token}</p>`, tblHtml).replaceAll(token, tblHtml);
+  });
+
+  // Reverse replace to avoid substring conflicts (e.g. slot 1 vs slot 10)
+  for (let i = inlineMath.length - 1; i >= 0; i--) {
+    const safeMath = inlineMath[i].replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+    html = html.replaceAll(`__MATH_SLOT_${i}__`, safeMath);
+  }
+
+  return html;
+}
+
+
+function applyInline(str: string): string {
+  return str
+    .replace(/!\[(.*?)\]\((.*?)\)/g, (_m, alt, url) => {
+      const captionHtml = alt
+        ? `<figcaption class="text-xs font-mono text-neutral-500 italic mt-2.5 text-center">${alt}</figcaption>`
+        : '';
+      return `<figure class="my-6 flex flex-col items-center justify-center p-3 sm:p-4 bg-white border-[3px] border-[#2a2a2a] rounded-xl shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[6px_6px_0px_0px_#2a2a2a] max-w-full overflow-hidden"><img src="${url}" alt="${alt}" class="max-w-full h-auto rounded-lg mx-auto block" loading="lazy" />${captionHtml}</figure>`;
+    })
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-indigo-600 font-bold underline hover:text-indigo-800">$1 ↗</a>')
+    .replace(/\*\*(.*?)\*\*/g, '<strong class="font-black text-[#2a2a2a]">$1</strong>')
+    .replace(/\*(.*?)\*/g, '<em class="italic text-neutral-700">$1</em>')
+    .replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 bg-neutral-100 border border-neutral-300 rounded font-mono text-xs text-[#2a2a2a] font-bold">$1</code>');
+}
+
+
+const rawWorkedFiles = import.meta.glob('/src/content/tutorial-worked-examples/*.{md,mdoc}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const rawPracticeFiles = import.meta.glob('/src/content/tutorial-practice-problems/*.{md,mdoc}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+const rawTutorialFiles = import.meta.glob('/src/content/tutorials/*/index.{md,mdoc}', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+
+function extractMarkdownBody(raw: string): string {
+  if (!raw) return '';
+  const match = raw.match(/^---[\s\S]*?---\n([\s\S]*)$/);
+  return match ? match[1].trim() : raw.trim();
+}
+
+const tutorialKey = `/src/content/tutorials/${slug}/index.md`;
+const rawTutorial = rawTutorialFiles[tutorialKey] || rawTutorialFiles[`/src/content/tutorials/${slug}/index.mdoc`] || '';
+const rawTheoryBody = extractMarkdownBody(rawTutorial) || tutorial?.body || '';
+const renderedTheoryHtml = renderSolutionSafe(rawTheoryBody);
+
+const currentLesson = {
+  title: tutorial?.data.title || 'Untitled Tutorial',
+  subtitle: tutorial?.data.subtitle || '',
+  category: tutorial?.data.category || 'Combinatorics',
+  difficulty: tutorial?.data.difficulty || 'Intermediate',
+  author: tutorial?.data.author || 'deMath Academic Team',
+  readTime: tutorial?.data.estimatedReadTime || '15 min lesson',
+  publishDate: tutorial?.data.publishDate ? new Date(tutorial.data.publishDate).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '',
+  description: tutorial?.data.summary || tutorial?.data.subtitle || '',
+  workedExamples: slugWorkedExamples.map((e, idx) => {
+    const fileKey = `/src/content/tutorial-worked-examples/${e.id}.md`;
+    const altFileKey = `/src/content/tutorial-worked-examples/${e.id}`;
+    const rawContent = rawWorkedFiles[fileKey] || rawWorkedFiles[altFileKey] || '';
+    const solutionBody = extractMarkdownBody(rawContent) || e.body || '';
+
+    return {
+      id: idx + 1,
+      title: e.data.title,
+      problem: e.data.statement || '',
+      insight: e.data.insight || '',
+      solution: solutionBody,
+    };
+  }),
+  practiceProblems: slugPracticeProblems.map((e, idx) => {
+    const fileKey = `/src/content/tutorial-practice-problems/${e.id}.md`;
+    const altFileKey = `/src/content/tutorial-practice-problems/${e.id}`;
+    const rawContent = rawPracticeFiles[fileKey] || rawPracticeFiles[altFileKey] || '';
+    const solutionBody = extractMarkdownBody(rawContent) || e.body || '';
+
+    return {
+      id: idx + 1,
+      title: e.data.title,
+      difficulty: e.data.difficulty,
+      statement: e.data.statement || '',
+      hint1: e.data.hint1,
+      hint2: e.data.hint2,
+      hint3: e.data.hint3,
+      solution: solutionBody,
+    };
+  })
+};
+---
+
+<Layout 
+  title={`${currentLesson.title} // Problem Solving Techniques`}
+  description={currentLesson.description}
+>
+
+
+  <SEOJsonLd
+    type="course"
+    title={`${currentLesson.title} — Mathematical Technique Short Course`}
+    description={currentLesson.description}
+    url={Astro.url.href}
+    category={currentLesson.category}
+    author={currentLesson.author}
+    courseDetails={{
+      instructor: currentLesson.author,
+      level: currentLesson.difficulty,
+      duration: currentLesson.readTime,
+      category: currentLesson.category
+    }}
+    breadcrumbs={[
+      { name: 'Home', item: 'https://saadhassan.in/' },
+      { name: 'Techniques Archive', item: 'https://saadhassan.in/techniques' },
+      { name: currentLesson.title, item: Astro.url.href }
+    ]}
+  />
+
+<div class="min-h-screen bg-[#f5f5f2] relative font-sans pt-10 pb-24 selection:bg-[#ebef70]">
+    <!-- Blueprint Grid Lines -->
+    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none overflow-hidden"
+         style="background-size: 24px 24px; background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px);">
+    </div>
+
+    <main class="max-w-7xl px-2 sm:px-6 mx-auto relative z-10 space-y-4 sm:space-y-8">
+      
+      <!-- Top Breadcrumb Navigation -->
+      <nav class="flex items-center gap-1.5 sm:gap-2 font-mono text-[11px] sm:text-xs font-bold text-neutral-500 overflow-x-auto pb-0.5">
+        <a href="/techniques" class="hover:text-[#2a2a2a] hover:underline flex items-center gap-1 shrink-0">
+          <span>←</span> TECHNIQUES ARCHIVE
+        </a>
+        <span class="text-neutral-300">/</span>
+        <span class="text-[#2a2a2a] uppercase tracking-wide truncate">{currentLesson.title}</span>
+      </nav>
+
+      <!-- Hero Title Banner -->
+      <header class="bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl p-3.5 sm:p-7 md:p-8 shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] space-y-3 sm:space-y-5 relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-[#ebef70]/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-4 relative z-10">
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
+            <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-[#ebef70] border-2 border-[#2a2a2a] rounded-lg text-[10px] sm:text-xs font-mono font-black shadow-[1.5px_1.5px_0px_#2a2a2a] uppercase">
+              {currentLesson.category}
+            </span>
+            <span class="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-amber-100 border-2 border-[#2a2a2a] text-amber-900 rounded-lg text-[10px] sm:text-xs font-mono font-bold shadow-[1.5px_1.5px_0px_#2a2a2a]">
+              {currentLesson.difficulty} Level
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-[10px] sm:text-xs font-mono font-bold text-neutral-600 bg-neutral-100 px-2 py-0.5 rounded border border-neutral-200">
+              ⏱ {currentLesson.readTime}
+            </span>
+            {currentLesson.publishDate && (
+              <span class="text-[10px] sm:text-xs font-mono font-bold text-neutral-400 hidden sm:inline-block">
+                {currentLesson.publishDate}
+              </span>
+            )}
+          </div>
+        </div>
+
+        <div class="space-y-1 sm:space-y-1.5 relative z-10">
+          <h1 class="font-sketch hero-heading font-semibold text-[#2a2a2a] leading-tight">
+            {currentLesson.title}
+          </h1>
+          {currentLesson.subtitle && (
+            <p class="text-xs sm:text-sm font-sans font-medium text-neutral-600 leading-normal">
+              {currentLesson.subtitle}
+            </p>
+          )}
+        </div>
+
+        {currentLesson.description && (
+          <p class="text-xs sm:text-sm text-neutral-700 leading-relaxed font-sans max-w-3xl border-t border-dashed border-neutral-200 pt-2.5 sm:pt-3">
+            {currentLesson.description}
+          </p>
+        )}
+      </header>
+
+      <!-- Grid Layout: Sidebar Navigation + Main Content -->
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8 items-start relative">
+
+        <!-- Sticky Sidebar Navigation -->
+        <aside class="lg:col-span-1 lg:sticky lg:top-20 z-30 space-y-3 sm:space-y-4">
+          <div class="bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl p-3 sm:p-4 shadow-[2.5px_2.5px_0px_0px_#2a2a2a] sm:shadow-[4px_4px_0px_0px_#2a2a2a] space-y-2.5 font-mono text-xs">
+            <div class="font-black text-[#2a2a2a] uppercase border-b-2 border-[#2a2a2a] pb-1.5 flex items-center justify-between">
+              <span>// OUTLINE</span>
+              <span class="text-[10px] text-neutral-400 font-bold">NAV</span>
+            </div>
+            <nav id="outline-nav" class="space-y-1.5 font-bold">
+              <a 
+                href="#theory" 
+                data-section="theory"
+                class="outline-link block p-1.5 sm:p-2 rounded-lg border-2 border-transparent hover:border-[#2a2a2a] hover:bg-[#ebef70]/30 hover:text-[#2a2a2a] transition-all text-neutral-600"
+              >
+                1. Theory
+              </a>
+              <a 
+                href="#worked-examples" 
+                data-section="worked-examples"
+                class="outline-link block p-1.5 sm:p-2 rounded-lg border-2 border-transparent hover:border-[#2a2a2a] hover:bg-[#ebef70]/30 hover:text-[#2a2a2a] transition-all text-neutral-600 flex items-center justify-between"
+              >
+                <span>2. Worked Examples</span>
+                <span class="px-1.5 py-0.2 bg-neutral-100 rounded text-[10px] font-mono border border-neutral-200">{currentLesson.workedExamples.length}</span>
+              </a>
+              <a 
+                href="#practice-problems" 
+                data-section="practice-problems"
+                class="outline-link block p-1.5 sm:p-2 rounded-lg border-2 border-transparent hover:border-[#2a2a2a] hover:bg-[#ebef70]/30 hover:text-[#2a2a2a] transition-all text-neutral-600 flex items-center justify-between"
+              >
+                <span>3. Practice Problems</span>
+                <span class="px-1.5 py-0.2 bg-neutral-100 rounded text-[10px] font-mono border border-neutral-200">{currentLesson.practiceProblems.length}</span>
+              </a>
+            </nav>
+          </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="lg:col-span-3 space-y-5 sm:space-y-8">
+          
+          <!-- SECTION 1: THEORY -->
+          <section id="theory" class="scroll-mt-24 bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl p-3 sm:p-6 md:p-8 shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] space-y-3 sm:space-y-5">
+            <div class="flex items-center gap-2.5 sm:gap-3 border-b-2 border-[#2a2a2a] pb-2.5 sm:pb-3.5">
+              <span class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs text-[#2a2a2a] shadow-[1px_1px_0px_#2a2a2a] shrink-0">
+                01
+              </span>
+              <div>
+                <span class="block font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-neutral-400">// Theory</span>
+                <h2 class="font-sketch text-base sm:text-xl md:text-2xl font-semibold text-[#2a2a2a]">
+                  Theory & Core Principles
+                </h2>
+              </div>
+            </div>
+
+            <div class="prose-textbook text-[#2a2a2a] leading-relaxed space-y-2.5 sm:space-y-3.5" set:html={renderedTheoryHtml}>
+            </div>
+          </section>
+
+          <!-- SECTION 2: WORKED EXAMPLES -->
+          <section id="worked-examples" class="scroll-mt-24 space-y-3.5 sm:space-y-5">
+            <div class="flex items-center gap-2.5 sm:gap-3 bg-[#2a2a2a] text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 sm:border-[3px] border-[#2a2a2a] shadow-[3px_3px_0px_0px_#ebef70] sm:shadow-[5px_5px_0px_0px_#ebef70]">
+              <span class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs text-[#2a2a2a] shadow-[1px_1px_0px_rgba(255,255,255,0.3)] shrink-0">
+                02
+              </span>
+              <div>
+                <span class="block font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-[#ebef70]">// Worked Examples</span>
+                <h2 class="font-sketch text-base sm:text-xl md:text-2xl font-semibold text-white">
+                  Worked Examples
+                </h2>
+                <p class="text-[10px] sm:text-xs font-mono text-neutral-300 mt-0.5">
+                  Step-by-step solutions showing how to apply the technique.
+                </p>
+              </div>
+            </div>
+
+            {currentLesson.workedExamples.map(ex => (
+              <article class="bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-7 shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] space-y-3 sm:space-y-5">
+                <div class="flex items-center gap-2.5 sm:gap-3 border-b-2 border-[#2a2a2a] pb-2.5 sm:pb-3.5">
+                  <span class="w-6 h-6 sm:w-7 sm:h-7 rounded bg-[#2a2a2a] text-white border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-[10px] sm:text-xs shadow-[1px_1px_0px_#8f8f8f] shrink-0">
+                    {String(ex.id).padStart(2, '0')}
+                  </span>
+                  <h3 class="font-sketch text-sm sm:text-lg md:text-xl font-semibold text-[#2a2a2a]">
+                    {ex.title}
+                  </h3>
+                </div>
+
+                <!-- Problem Statement Card -->
+                <div class="space-y-1">
+                  <span class="text-[9px] sm:text-[10px] font-mono font-bold text-neutral-400 tracking-wide">// Problem</span>
+                  <div class="p-2.5 sm:p-4 md:p-5 bg-amber-50/30 border-2 border-[#2a2a2a] rounded-xl shadow-[1.5px_1.5px_0px_#2a2a2a] sm:shadow-[2.5px_2.5px_0px_#2a2a2a]">
+                    <div class="prose-textbook leading-relaxed text-[#2a2a2a]" set:html={renderSolutionSafe(ex.problem)} />
+                  </div>
+                </div>
+
+                {ex.insight && (
+                  <div class="p-2.5 sm:p-3.5 bg-amber-50/60 border-2 border-[#2a2a2a] rounded-xl shadow-[1.5px_1.5px_0px_#2a2a2a] sm:shadow-[2.5px_2.5px_0px_#2a2a2a] space-y-1">
+                    <div>
+                      <span class="inline-block px-2 py-0.5 bg-[#2a2a2a] text-white rounded font-mono font-bold text-[9px] sm:text-[10px]">
+                        Key Idea
+                      </span>
+                    </div>
+                    <p class="font-sans font-medium text-neutral-800 leading-relaxed text-xs sm:text-sm">{ex.insight}</p>
+                  </div>
+                )}
+
+                <!-- Solution Card -->
+                <div class="space-y-1 pt-1">
+                  <span class="text-[9px] sm:text-[10px] font-mono font-bold text-neutral-400 tracking-wide">// Solution</span>
+                  <div class="p-2.5 sm:p-4 md:p-6 bg-[#fafaf8] border-2 border-[#2a2a2a] rounded-xl shadow-[1.5px_1.5px_0px_#2a2a2a] sm:shadow-[2.5px_2.5px_0px_#2a2a2a]">
+                    <div class="prose-textbook leading-relaxed text-neutral-800 space-y-2 sm:space-y-2.5" set:html={renderSolutionSafe(ex.solution)} />
+                  </div>
+                </div>
+              </article>
+            ))}
+          </section>
+
+          <!-- SECTION 3: PRACTICE PROBLEMS -->
+          <section id="practice-problems" class="scroll-mt-24 space-y-3.5 sm:space-y-5">
+            <div class="flex items-center gap-2.5 sm:gap-3 bg-[#2a2a2a] text-white p-3 sm:p-4 rounded-xl sm:rounded-2xl border-2 sm:border-[3px] border-[#2a2a2a] shadow-[3px_3px_0px_0px_#ebef70] sm:shadow-[5px_5px_0px_0px_#ebef70]">
+              <span class="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs text-[#2a2a2a] shadow-[1px_1px_0px_rgba(255,255,255,0.3)] shrink-0">
+                03
+              </span>
+              <div>
+                <span class="block font-mono text-[9px] sm:text-[10px] font-bold tracking-wider text-[#ebef70]">// Practice</span>
+                <h2 class="font-sketch text-base sm:text-xl md:text-2xl font-semibold text-white">
+                  Practice Problems
+                </h2>
+                <p class="text-[10px] sm:text-xs font-mono text-neutral-300 mt-0.5">
+                  Try solving these problems on your own before checking the hints or solution.
+                </p>
+              </div>
+            </div>
+
+            {currentLesson.practiceProblems.map((prob, idx) => (
+              <article class="bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl sm:rounded-2xl p-3 sm:p-5 md:p-7 shadow-[3px_3px_0px_0px_#2a2a2a] sm:shadow-[5px_5px_0px_0px_#2a2a2a] space-y-3 sm:space-y-5" id={`practice-${prob.id}`}>
+                
+                <!-- Problem Header Ribbon -->
+                <div class="flex flex-wrap items-center justify-between gap-2 sm:gap-3 border-b-2 border-[#2a2a2a] pb-2.5 sm:pb-3.5">
+                  <div class="flex items-center gap-2 sm:gap-2.5">
+                    <span class="w-6 h-6 sm:w-7 sm:h-7 rounded bg-[#2a2a2a] text-white border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-[10px] sm:text-xs shadow-[1px_1px_0px_#8f8f8f] shrink-0">
+                      {String(prob.id).padStart(2, '0')}
+                    </span>
+                    <h3 class="font-sketch text-sm sm:text-lg md:text-xl font-semibold text-[#2a2a2a]">
+                      {prob.title}
+                    </h3>
+                  </div>
+                  <span class="px-2 py-0.5 sm:px-2.5 sm:py-1 bg-amber-100 border-2 border-[#2a2a2a] text-amber-900 rounded-lg text-[9px] sm:text-xs font-mono font-bold shadow-[1px_1px_0px_#2a2a2a]">
+                    {prob.difficulty} Level
+                  </span>
+                </div>
+
+                <!-- Problem Statement Card -->
+                <div class="space-y-1">
+                  <span class="text-[9px] sm:text-[10px] font-mono font-bold text-neutral-400 tracking-wide">// Problem</span>
+                  <div class="p-2.5 sm:p-4 md:p-5 bg-[#fafaf8] border-2 border-[#2a2a2a] rounded-xl shadow-[1.5px_1.5px_0px_#2a2a2a] sm:shadow-[2.5px_2.5px_0px_#2a2a2a]">
+                    <div class="prose-textbook leading-relaxed text-[#2a2a2a]" set:html={renderSolutionSafe(prob.statement)} />
+                  </div>
+                </div>
+
+                <!-- Hints Accordion -->
+                <div class="space-y-2.5 pt-1">
+                  <span class="font-mono text-[10px] font-bold uppercase text-neutral-400">// Hints</span>
+
+                  {prob.hint1 && (
+                    <div class="hint-container border-2 border-[#2a2a2a] rounded-xl bg-white shadow-[2px_2px_0px_#2a2a2a] overflow-hidden transition-all">
+                      <button 
+                        type="button"
+                        class="hint-toggle w-full p-2.5 sm:p-3 bg-amber-50/60 hover:bg-amber-100/70 text-left font-mono text-xs font-bold text-[#2a2a2a] flex items-center justify-between transition-all select-none group cursor-pointer"
+                        aria-expanded="false"
+                      >
+                        <div class="flex items-center gap-2">
+                          <span class="px-1.5 py-0.5 bg-amber-200 border border-[#2a2a2a] text-[#2a2a2a] rounded font-mono font-bold text-[9px] uppercase shadow-[1px_1px_0px_#2a2a2a]">
+                            HINT 01
+                          </span>
+                          <span class="font-bold text-xs text-[#2a2a2a]">
+                            Hint 1
+                          </span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="hint-status text-[9px] sm:text-[10px] font-mono font-bold text-neutral-500 uppercase">Show Hint</span>
+                          <span class="toggle-icon w-4 h-4 rounded border border-[#2a2a2a] bg-white flex items-center justify-center font-mono font-bold text-xs shadow-[1px_1px_0px_#2a2a2a] group-hover:bg-[#ebef70] transition-colors">
+                            +
+                          </span>
+                        </div>
+                      </button>
+                      <div class="hint-content hidden p-3 sm:p-4 border-t-2 border-[#2a2a2a] bg-amber-50/20 prose-textbook leading-relaxed text-[#2a2a2a]" set:html={renderSolutionSafe(prob.hint1)} />
+                    </div>
+                  )}
+
+                  {prob.hint2 && (
+                    <div class="hint-container border-2 border-[#2a2a2a] rounded-xl bg-white shadow-[2px_2px_0px_#2a2a2a] overflow-hidden transition-all">
+                      <button 
+                        type="button"
+                        class="hint-toggle w-full p-2.5 sm:p-3 bg-amber-50/60 hover:bg-amber-100/70 text-left font-mono text-xs font-bold text-[#2a2a2a] flex items-center justify-between transition-all select-none group cursor-pointer"
+                        aria-expanded="false"
+                      >
+                        <div class="flex items-center gap-2">
+                          <span class="px-1.5 py-0.5 bg-amber-200 border border-[#2a2a2a] text-[#2a2a2a] rounded font-mono font-bold text-[9px] uppercase shadow-[1px_1px_0px_#2a2a2a]">
+                            HINT 02
+                          </span>
+                          <span class="font-bold text-xs text-[#2a2a2a]">
+                            Hint 2
+                          </span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="hint-status text-[9px] sm:text-[10px] font-mono font-bold text-neutral-500 uppercase">Show Hint</span>
+                          <span class="toggle-icon w-4 h-4 rounded border border-[#2a2a2a] bg-white flex items-center justify-center font-mono font-bold text-xs shadow-[1px_1px_0px_#2a2a2a] group-hover:bg-[#ebef70] transition-colors">
+                            +
+                          </span>
+                        </div>
+                      </button>
+                      <div class="hint-content hidden p-3 sm:p-4 border-t-2 border-[#2a2a2a] bg-amber-50/20 prose-textbook leading-relaxed text-[#2a2a2a]" set:html={renderSolutionSafe(prob.hint2)} />
+                    </div>
+                  )}
+
+                  {prob.hint3 && (
+                    <div class="hint-container border-2 border-[#2a2a2a] rounded-xl bg-white shadow-[2px_2px_0px_#2a2a2a] overflow-hidden transition-all">
+                      <button 
+                        type="button"
+                        class="hint-toggle w-full p-2.5 sm:p-3 bg-amber-50/60 hover:bg-amber-100/70 text-left font-mono text-xs font-bold text-[#2a2a2a] flex items-center justify-between transition-all select-none group cursor-pointer"
+                        aria-expanded="false"
+                      >
+                        <div class="flex items-center gap-2">
+                          <span class="px-1.5 py-0.5 bg-amber-200 border border-[#2a2a2a] text-[#2a2a2a] rounded font-mono font-bold text-[9px] uppercase shadow-[1px_1px_0px_#2a2a2a]">
+                            HINT 03
+                          </span>
+                          <span class="font-bold text-xs text-[#2a2a2a]">
+                            Hint 3
+                          </span>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                          <span class="hint-status text-[9px] sm:text-[10px] font-mono font-bold text-neutral-500 uppercase">Show Hint</span>
+                          <span class="toggle-icon w-4 h-4 rounded border border-[#2a2a2a] bg-white flex items-center justify-center font-mono font-bold text-xs shadow-[1px_1px_0px_#2a2a2a] group-hover:bg-[#ebef70] transition-colors">
+                            +
+                          </span>
+                        </div>
+                      </button>
+                      <div class="hint-content hidden p-3 sm:p-4 border-t-2 border-[#2a2a2a] bg-amber-50/20 prose-textbook leading-relaxed text-[#2a2a2a]" set:html={renderSolutionSafe(prob.hint3)} />
+                    </div>
+                  )}
+                </div>
+
+                <!-- Solution Accordion -->
+                <div class="solution-container pt-1">
+                  <div class="border-2 border-[#2a2a2a] rounded-xl bg-white shadow-[2px_2px_0px_#2a2a2a] overflow-hidden">
+                    <button 
+                      type="button"
+                      class="solution-toggle w-full px-3.5 py-2.5 sm:py-3 bg-indigo-50/80 hover:bg-indigo-100 text-left flex items-center justify-between transition-all select-none group cursor-pointer"
+                      aria-expanded="false"
+                    >
+                      <span class="solution-btn-status font-mono font-bold text-xs sm:text-sm text-[#2a2a2a] uppercase tracking-wider">
+                        Show Solution
+                      </span>
+                      <span class="solution-chevron w-5 h-5 rounded border border-[#2a2a2a] bg-white flex items-center justify-center text-[11px] font-mono font-bold text-[#2a2a2a] shadow-[1px_1px_0px_#2a2a2a] transition-transform duration-300 group-hover:bg-[#ebef70]">
+                        ▼
+                      </span>
+                    </button>
+                    <div class="solution-content hidden p-3 sm:p-5 border-t-2 border-[#2a2a2a] bg-[#fcfcfa] prose-textbook leading-relaxed text-[#2a2a2a]">
+                      <div class="solution-body space-y-2" set:html={renderSolutionSafe(prob.solution)} />
+                    </div>
+                  </div>
+                </div>
+
+              </article>
+            ))}
+          </section>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</Layout>
+
+<style is:global>
+  /* ⚡ 100% UNIFIED EDITORIAL PROSE TYPOGRAPHY */
+  .prose-textbook,
+  .prose-textbook p,
+  .prose-textbook li,
+  .prose-p {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+    font-size: 0.9375rem !important; /* 15px */
+    line-height: 1.68 !important;
+    color: #242424 !important;
+    letter-spacing: -0.003em !important;
+    font-weight: 450 !important;
+  }
+
+  .prose-textbook p,
+  .prose-p {
+    margin-bottom: 0.75rem !important;
+  }
+
+  @media (min-width: 640px) {
+    .prose-textbook,
+    .prose-textbook p,
+    .prose-textbook li,
+    .prose-p {
+      font-size: 1.03125rem !important; /* 16.5px */
+      line-height: 1.75 !important;
+    }
+    .prose-textbook p,
+    .prose-p {
+      margin-bottom: 1rem !important;
+    }
+  }
+
+  .prose-textbook strong {
+    color: #111111 !important;
+    font-weight: 750 !important;
+  }
+
+  .prose-textbook em {
+    color: #333333 !important;
+    font-style: italic !important;
+  }
+
+  .prose-textbook h2 {
+    font-size: 1.125rem !important;
+    line-height: 1.35 !important;
+    margin-top: 1.25rem !important;
+    margin-bottom: 0.5rem !important;
+    color: #111111 !important;
+    font-weight: 800 !important;
+  }
+
+  .prose-textbook h3 {
+    font-size: 1rem !important;
+    line-height: 1.35 !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.35rem !important;
+    color: #111111 !important;
+    font-weight: 800 !important;
+  }
+
+  @media (min-width: 640px) {
+    .prose-textbook h2 {
+      font-size: 1.35rem !important;
+      margin-top: 1.75rem !important;
+      margin-bottom: 0.75rem !important;
+    }
+    .prose-textbook h3 {
+      font-size: 1.15rem !important;
+      margin-top: 1.25rem !important;
+      margin-bottom: 0.5rem !important;
+    }
+  }
+
+  /* Display Math Equation Cards */
+  .solution-display-math {
+    padding: 0.625rem 0.75rem;
+    background-color: #ffffff;
+    border: 2px solid #2a2a2a;
+    border-radius: 0.75rem;
+    box-shadow: 2px 2px 0px 0px #2a2a2a;
+    margin: 0.875rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    max-width: 100%;
+    text-align: center;
+  }
+
+  .prose-textbook .katex {
+    color: #1a1a1a !important;
+  }
+
+  .prose-textbook ol {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose-textbook ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .prose-textbook blockquote {
+    margin-top: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+</style>
+
+
+<script>
+  function setupHintAndSolutionToggles() {
+    // 1. Progressive Hint Toggles
+    const hintToggles = document.querySelectorAll('.hint-toggle');
+    hintToggles.forEach(btn => {
+      // Remove any existing click listener by cloning or fresh check
+      if ((btn as any)._hasListener) return;
+      (btn as any)._hasListener = true;
+
+      btn.addEventListener('click', () => {
+        const container = btn.closest('.hint-container');
+        if (!container) return;
+        const content = container.querySelector('.hint-content');
+        const icon = container.querySelector('.toggle-icon');
+        const status = container.querySelector('.hint-status');
+
+        if (content) {
+          const isHidden = content.classList.contains('hidden');
+          if (isHidden) {
+            content.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (icon) icon.textContent = '−';
+            if (status) status.textContent = 'Hide Hint';
+            
+            // Re-render KaTeX on dynamic un-hide
+            if ((window as any).renderMathInElement) {
+              (window as any).renderMathInElement(content, {
+                delimiters: [
+                  {left: '$$', right: '$$', display: true},
+                  {left: '$', right: '$', display: false},
+                  {left: '\\(', right: '\\)', display: false},
+                  {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+              });
+            }
+          } else {
+            content.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (icon) icon.textContent = '+';
+            if (status) status.textContent = 'Show Hint';
+          }
+        }
+      });
+    });
+
+    // 2. Master Solution Toggles
+    const solutionToggles = document.querySelectorAll('.solution-toggle');
+    solutionToggles.forEach(btn => {
+      if ((btn as any)._hasListener) return;
+      (btn as any)._hasListener = true;
+
+      btn.addEventListener('click', () => {
+        const container = btn.closest('.solution-container');
+        if (!container) return;
+        const content = container.querySelector('.solution-content');
+        const chevron = container.querySelector('.solution-chevron');
+        const status = container.querySelector('.solution-btn-status');
+
+        if (content) {
+          const isHidden = content.classList.contains('hidden');
+          if (isHidden) {
+            content.classList.remove('hidden');
+            btn.setAttribute('aria-expanded', 'true');
+            if (chevron) (chevron as HTMLElement).style.transform = 'rotate(180deg)';
+            if (status) status.textContent = 'Hide Solution';
+
+            // Re-render KaTeX on dynamic un-hide
+            if ((window as any).renderMathInElement) {
+              (window as any).renderMathInElement(content, {
+                delimiters: [
+                  {left: '$$', right: '$$', display: true},
+                  {left: '$', right: '$', display: false},
+                  {left: '\\(', right: '\\)', display: false},
+                  {left: '\\[', right: '\\]', display: true}
+                ],
+                throwOnError: false
+              });
+            }
+          } else {
+            content.classList.add('hidden');
+            btn.setAttribute('aria-expanded', 'false');
+            if (chevron) (chevron as HTMLElement).style.transform = 'rotate(0deg)';
+            if (status) status.textContent = 'Show Solution';
+          }
+        }
+      });
+    });
+  }
+
+  // Setup on page load
+  setupHintAndSolutionToggles();
+  document.addEventListener('astro:page-load', setupHintAndSolutionToggles);
+
+  function setupScrollSpy() {
+    const links = document.querySelectorAll<HTMLAnchorElement>('.outline-link');
+    const sections = ['theory', 'worked-examples', 'practice-problems']
+      .map(id => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    if (links.length === 0 || sections.length === 0) return;
+
+    function updateActiveOutline() {
+      const scrollPos = window.scrollY + 140;
+
+      let currentSectionId = '';
+      for (const section of sections) {
+        const top = section.offsetTop;
+        const height = section.offsetHeight;
+        if (scrollPos >= top && scrollPos < top + height) {
+          currentSectionId = section.id;
+          break;
+        }
+      }
+
+      // If at top of page, default to first
+      if (!currentSectionId && window.scrollY < (sections[0]?.offsetTop || 0)) {
+        currentSectionId = sections[0]?.id || '';
+      }
+      // If at very bottom of page, default to last
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 80) {
+        currentSectionId = sections[sections.length - 1]?.id || '';
+      }
+
+      links.forEach(link => {
+        const sectionAttr = link.getAttribute('data-section');
+        if (sectionAttr === currentSectionId) {
+          link.classList.add('bg-[#ebef70]', 'border-[#2a2a2a]', 'shadow-[2px_2px_0px_#2a2a2a]', 'text-[#2a2a2a]');
+          link.classList.remove('border-transparent', 'text-neutral-600');
+        } else {
+          link.classList.remove('bg-[#ebef70]', 'border-[#2a2a2a]', 'shadow-[2px_2px_0px_#2a2a2a]', 'text-[#2a2a2a]');
+          link.classList.add('border-transparent', 'text-neutral-600');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveOutline, { passive: true });
+    updateActiveOutline();
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    setupHintAndSolutionToggles();
+    setupScrollSpy();
+  });
+  document.addEventListener('astro:page-load', () => {
+    setupHintAndSolutionToggles();
+    setupScrollSpy();
+  });
+</script>

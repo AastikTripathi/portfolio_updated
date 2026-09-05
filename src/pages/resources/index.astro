@@ -1,0 +1,288 @@
+---
+// src/pages/resources/index.astro
+import Layout from '../../layouts/Layout.astro';
+import SEOJsonLd from '../../components/SEOJsonLd.astro';
+
+const publishedBooks = [
+  {
+    id: 'olympiad-companion',
+    title: 'Olympiad Companion: The Fine Art of Mathematical Mischief',
+    subtitle: 'A Curated Collection of Advanced Problem-Solving Techniques for Math Olympiads',
+    author: 'Saad Hassan',
+    publishDate: 'Published Edition',
+    pages: 'Paperback Edition',
+    publisher: 'Narosa Publishing House / Amazon',
+    coverImage: '/images/books/olympiad-companion.jpg',
+    coverBg: 'from-amber-700 via-yellow-900 to-slate-900',
+    accentColor: '#f59e0b',
+    description: 'This book is a journey through the landscape of Olympiad mathematics, where theory and problem-solving walk hand in hand. Each chapter builds a conceptual foundation before guiding the reader into the heart of challenging problems with motivated solutions that teach, motivate, and reveal. It aims to foster deep mathematical thinking by guiding readers through elegant strategies and revealing the hidden structure of tough problems. More than a compendium of answers, it is a mentor in print, ideal for serious students seeking both mastery and inspiration.',
+    highlights: [
+      'Comprehensive conceptual foundations paired with non-routine Olympiad problems',
+      'Motivated, step-by-step solutions revealing underlying problem structures',
+      'Fosters deep mathematical thinking and proof-building heuristics',
+      'Ideal mentor for RMO, INMO, IMO, ISI, CMI, and Putnam aspirants'
+    ],
+    buyLinks: [
+      { name: 'Buy on Amazon India 🛒', url: 'https://www.amazon.in/Olympiad-Companion-Fine-Mathematical-Mischeif/dp/8184878044', bg: 'bg-[#2a2a2a] text-white hover:bg-amber-600' },
+    ]
+  }
+];
+
+const upcomingWorks = [
+  {
+    id: 'calculus-through-problems',
+    title: 'Calculus Through Problems',
+    subtitle: 'Works',
+    publisher: 'World Scientific',
+    author: 'Saad Hassan',
+    status: 'Upcoming Release',
+    statusBg: 'bg-indigo-100 text-indigo-900 border-indigo-300',
+    description: 'A rigorous problem-driven voyage across real analysis, limits, differentiation, and integral calculus. Built for students seeking profound conceptual clarity and mastery through challenging, structured problem progressions.',
+    highlights: [
+      'Published by World Scientific',
+      'Deep exploration of calculus concepts from foundational analysis to advanced Olympiad-level problems',
+      'Accompanied by comprehensive official worked solutions'
+    ],
+    pdfLink: {
+      name: 'Download Solutions Manual (PDF) 📥',
+      url: '/Solution-2.pdf'
+    }
+  },
+  {
+    id: 'algebra-through-problems',
+    title: 'Algebra Through Problems',
+    subtitle: 'Currently in Active Development',
+    publisher: 'Forthcoming Work',
+    author: 'Saad Hassan',
+    status: 'Currently Working On',
+    statusBg: 'bg-amber-100 text-amber-900 border-amber-300',
+    description: 'An upcoming comprehensive companion focused on higher Olympiad algebra, polynomials, functional equations, inequalities, and abstract algebraic techniques crafted from first principles.',
+    highlights: [
+      'Focus on polynomials, symmetric sums, and functional equations',
+      'Systematic progression from standard techniques to contest-level mastery',
+      'Manuscript currently in active development by Saad Hassan'
+    ],
+    pdfLink: null
+  }
+];
+
+const pageTitle = 'Author Library & Publications | Saad Hassan | deMath';
+const pageDescription = 'Explore published books and upcoming mathematical works by Saad Hassan, including Olympiad Companion, Calculus Through Problems (World Scientific), and Algebra Through Problems.';
+---
+
+<Layout title={pageTitle} description={pageDescription}>
+  <SEOJsonLd
+    type="website"
+    title={pageTitle}
+    description={pageDescription}
+    url={Astro.url.href}
+  />
+
+  <div class="min-h-screen bg-[#f5f5f2] relative overflow-hidden font-sans py-10 sm:py-14">
+    <!-- Blueprint Grid background -->
+    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
+         style="background-size: 24px 24px; background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px);">
+    </div>
+
+    <main class="relative z-10 max-w-6xl mx-auto px-3 sm:px-6 space-y-12 sm:space-y-16">
+
+      <!-- ── HERO HEADER ──────────────────────────────────────────────── -->
+      <div data-reveal class="text-center space-y-3 sm:space-y-4 max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-2.5 sm:px-3 py-1 bg-[#ebef70] border-2 border-[#2a2a2a] rounded-lg shadow-[2px_2px_0px_#2a2a2a] font-mono text-[10px] sm:text-xs font-bold tracking-wider text-[#2a2a2a]">
+          <span>○ BOOKS & ACADEMIC PUBLICATIONS</span>
+        </div>
+
+        <h1 class="font-sketch hero-heading font-semibold text-[#2a2a2a] tracking-tight">
+          Books & Mathematical Resources
+        </h1>
+
+        <p class="text-xs sm:text-base text-neutral-600 font-medium leading-relaxed">
+          Comprehensive textbooks, problem-solving companions, and solution manuals by Saad Hassan.
+        </p>
+      </div>
+
+      <!-- ── SECTION 1: PUBLISHED BOOKS ──────────────────────────────── -->
+      <section class="space-y-6">
+        <div data-reveal class="flex items-center gap-3 border-b-2 border-[#2a2a2a] pb-3">
+          <span class="px-2.5 sm:px-3 py-1 bg-emerald-100 border-2 border-[#2a2a2a] rounded-lg shadow-[2px_2px_0px_#2a2a2a] font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-emerald-900">
+            ✓ PUBLISHED BOOK
+          </span>
+          <div class="flex-1 h-px bg-[#2a2a2a] opacity-20"></div>
+        </div>
+
+        <div class="space-y-8">
+          {publishedBooks.map((book) => (
+            <div data-reveal class="bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-2xl p-4 sm:p-8 shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[8px_8px_0px_0px_#2a2a2a] grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+
+              <!-- Book Cover (Cols 1-4) -->
+              <div class="lg:col-span-4 flex flex-col justify-between p-2.5 sm:p-3 rounded-xl bg-[#2a2a2a] text-white shadow-[3px_3px_0px_0px_#2a2a2a] border-2 border-[#2a2a2a] min-h-[320px] sm:min-h-[360px] relative overflow-hidden group">
+                {book.coverImage ? (
+                  <div class="relative w-full h-full flex flex-col items-center justify-center bg-stone-900 rounded-lg overflow-hidden border border-neutral-700 p-1">
+                    <img
+                      src={book.coverImage}
+                      alt={book.title}
+                      class="w-full h-full object-contain max-h-[360px] rounded shadow-md transition-transform duration-300 group-hover:scale-[1.02]"
+                    />
+                  </div>
+                ) : (
+                  <div class="p-4 flex flex-col justify-between h-full bg-gradient-to-br" class:list={[book.coverBg]}>
+                    <div class="flex items-center justify-between font-mono text-[10px] font-bold tracking-widest uppercase text-amber-300">
+                      <span>OFFICIAL RELEASE</span>
+                      <span>{book.publishDate}</span>
+                    </div>
+
+                    <div class="my-6">
+                      <div class="text-xs font-mono font-bold text-amber-300 mb-1">OLYMPIAD MATHEMATICS</div>
+                      <h3 class="text-2xl font-black leading-snug tracking-tight text-white mb-2">{book.title}</h3>
+                      <p class="text-xs text-slate-300 font-sans italic">{book.subtitle}</p>
+                    </div>
+
+                    <div class="pt-4 border-t border-white/20 flex items-center justify-between font-mono text-xs text-slate-200 font-bold">
+                      <span>By {book.author}</span>
+                      <span class="px-2 py-0.5 bg-white/10 rounded border border-white/20 text-[10px]">ISBN 8184878044</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <!-- Book Info & Buy Links (Cols 5-12) -->
+              <div class="lg:col-span-8 flex flex-col justify-between space-y-4 sm:space-y-6">
+                <div>
+                  <div class="flex flex-wrap items-center gap-2 mb-2 sm:mb-3">
+                    <span class="px-2.5 py-0.5 bg-emerald-100 border border-emerald-400 text-emerald-800 rounded font-mono text-[10px] sm:text-[11px] font-black uppercase">
+                      AVAILABLE ON AMAZON INDIA
+                    </span>
+                    <span class="text-xs font-mono text-neutral-500 font-bold">• Author: Saad Hassan</span>
+                    <span class="text-xs font-mono text-neutral-500 font-bold">• Publisher: {book.publisher}</span>
+                  </div>
+
+                  <h2 class="text-xl sm:text-2xl md:text-3xl font-black text-[#2a2a2a] tracking-tight mb-1 sm:mb-2">{book.title}</h2>
+                  <p class="text-xs sm:text-sm font-bold text-amber-700 mb-3 sm:mb-4">{book.subtitle}</p>
+
+                  <p class="text-xs sm:text-sm text-neutral-700 leading-relaxed mb-4 sm:mb-6 font-medium">
+                    {book.description}
+                  </p>
+
+                  <div class="bg-amber-50/60 border-2 border-amber-200 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+                    <h4 class="font-mono text-xs font-bold tracking-wider text-amber-900 mb-2">Key Highlights</h4>
+                    <ul class="space-y-1.5 text-xs text-neutral-700 font-medium">
+                      {book.highlights.map(item => (
+                        <li class="flex items-start gap-2">
+                          <span class="text-emerald-600 font-black">✓</span>
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <!-- Purchase Buttons -->
+                <div class="pt-3 border-t-2 border-dashed border-neutral-200 flex flex-wrap items-center gap-3">
+                  {book.buyLinks.map(link => (
+                    <a
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class={`px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-mono text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_#2a2a2a] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all ${link.bg}`}
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                </div>
+
+              </div>
+
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <!-- ── SECTION 2: UPCOMING PUBLICATIONS & SOLUTIONS ─────────────── -->
+      <section class="space-y-6">
+        <div data-reveal class="flex items-center gap-3 border-b-2 border-[#2a2a2a] pb-3">
+          <span class="px-2.5 sm:px-3 py-1 bg-indigo-100 border-2 border-[#2a2a2a] rounded-lg shadow-[2px_2px_0px_#2a2a2a] font-mono text-[10px] sm:text-xs font-black uppercase tracking-widest text-indigo-950">
+            FORTHCOMING PUBLICATIONS & WORKBOOKS
+          </span>
+          <div class="flex-1 h-px bg-[#2a2a2a] opacity-20"></div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+          {upcomingWorks.map((work) => (
+            <article data-reveal class="bg-white border-2 sm:border-[3px] border-[#2a2a2a] rounded-2xl p-4 sm:p-7 shadow-[4px_4px_0px_0px_#2a2a2a] sm:shadow-[6px_6px_0px_0px_#2a2a2a] flex flex-col justify-between space-y-5">
+              
+              <div class="space-y-4">
+                <!-- Status & Publisher Header Badge -->
+                <div class="flex flex-wrap items-center justify-between gap-2 border-b-2 border-dashed border-neutral-200 pb-3">
+                  <span class={`px-2.5 py-0.5 border-2 border-[#2a2a2a] rounded-md font-mono text-[10px] font-black uppercase shadow-[1.5px_1.5px_0px_#2a2a2a] ${work.statusBg}`}>
+                    {work.status}
+                  </span>
+                  <span class="font-mono text-xs font-bold text-neutral-500">
+                    Publisher: <strong class="text-[#2a2a2a]">{work.publisher}</strong>
+                  </span>
+                </div>
+
+                <!-- Title & Subtitle -->
+                <div>
+                  <h3 class="text-xl sm:text-2xl font-black text-[#2a2a2a] tracking-tight mb-1">
+                    {work.title}
+                  </h3>
+                  <p class="font-mono text-xs font-bold text-indigo-700">
+                    {work.subtitle}
+                  </p>
+                  <p class="text-[11px] font-mono font-medium text-neutral-500 mt-0.5">
+                    By {work.author}
+                  </p>
+                </div>
+
+                <!-- Description -->
+                <p class="text-xs sm:text-sm text-neutral-700 font-medium leading-relaxed">
+                  {work.description}
+                </p>
+
+                <!-- Highlights Bullet List -->
+                <div class="bg-neutral-50 border-2 border-[#2a2a2a] rounded-xl p-3.5 space-y-2">
+                  <span class="font-mono text-[10px] font-bold uppercase tracking-wider text-neutral-500 block">
+                    Key Details
+                  </span>
+                  <ul class="space-y-1.5 text-xs text-neutral-700 font-medium">
+                    {work.highlights.map(item => (
+                      <li class="flex items-start gap-2">
+                        <span class="text-indigo-600 font-bold">•</span>
+                        <span>{item}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Action / Download Button Footer -->
+              <div class="pt-4 border-t-2 border-dashed border-neutral-200">
+                {work.pdfLink ? (
+                  <a
+                    href={work.pdfLink.url}
+                    target="_blank"
+                    download="Calculus-Through-Problems-Solutions.pdf"
+                    class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-[#ebef70] text-[#2a2a2a] border-2 sm:border-[3px] border-[#2a2a2a] rounded-xl font-mono text-xs font-black uppercase tracking-wider shadow-[3px_3px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2a2a2a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all select-none cursor-pointer"
+                  >
+                    <span>{work.pdfLink.name}</span>
+                  </a>
+                ) : (
+                  <div class="p-3 bg-amber-50/70 border-2 border-dashed border-amber-300 rounded-xl text-center">
+                    <span class="font-mono text-xs font-bold text-amber-900 block">
+                      Manuscript in Progress
+                    </span>
+                    <span class="text-[11px] font-mono text-neutral-500">
+                      Release dates & pre-release materials will be announced here.
+                    </span>
+                  </div>
+                )}
+              </div>
+
+            </article>
+          ))}
+        </div>
+      </section>
+
+    </main>
+  </div>
+</Layout>

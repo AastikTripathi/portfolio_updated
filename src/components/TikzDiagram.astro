@@ -1,0 +1,21 @@
+---
+interface Props {
+  code: string;
+  caption?: string;
+}
+
+const { code, caption } = Astro.props;
+---
+
+<div class="tikz-diagram-wrapper my-6 flex flex-col items-center justify-center p-3 sm:p-5 bg-indigo-50/60 rounded-2xl border-2 border-indigo-500 shadow-[4px_4px_0px_0px_#6366f1]">
+  <div class="w-full bg-white border-2 border-[#2a2a2a] rounded-xl p-4 sm:p-6 shadow-[4px_4px_0px_0px_#2a2a2a] flex flex-col items-center justify-center overflow-x-auto">
+    <div class="tikz-canvas text-stone-900 max-w-full overflow-x-auto p-2">
+      <script type="text/tikz" set:html={code}></script>
+    </div>
+    {caption && (
+      <p class="text-xs text-stone-500 italic mt-3 text-center max-w-lg font-sans">
+        {caption}
+      </p>
+    )}
+  </div>
+</div>

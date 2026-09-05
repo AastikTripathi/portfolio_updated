@@ -1,0 +1,209 @@
+---
+// src/components/SEOJsonLd.astro
+interface Props {
+  type: 'problem' | 'collection' | 'website' | 'article' | 'course' | 'book' | 'about';
+  title: string;
+  description: string;
+  url: string;
+  category?: string;
+  competition?: string;
+  year?: number;
+  tags?: string[];
+  datePublished?: string;
+  author?: string;
+  image?: string;
+  questionText?: string;
+  answerText?: string;
+  courseDetails?: {
+    instructor?: string;
+    level?: string;
+    duration?: string;
+    category?: string;
+  };
+  bookDetails?: {
+    isbn?: string;
+    publisher?: string;
+    format?: string;
+  };
+  breadcrumbs?: Array<{ name: string; item: string }>;
+}
+
+const {
+  type,
+  title,
+  description,
+  url,
+  category,
+  competition,
+  year,
+  tags = [],
+  datePublished,
+  author = 'Saad Hassan',
+  image = 'https://saadhassan.in/Group 1 (3).png',
+  questionText,
+  answerText,
+  courseDetails,
+  bookDetails,
+  breadcrumbs
+} = Astro.props;
+
+const siteUrl = 'https://saadhassan.in';
+
+const organizationSchema = {
+  '@type': 'EducationalOrganization',
+  name: 'deMath',
+  url: siteUrl,
+  logo: `${siteUrl}/Group 1 (3).png`,
+  founder: {
+    '@type': 'Person',
+    name: 'Saad Hassan',
+    jobTitle: 'Mathematics Educator & Author',
+    url: `${siteUrl}/about`
+  },
+  sameAs: [
+    'https://www.amazon.in/Olympiad-Companion-Fine-Mathematical-Mischeif/dp/8184878044',
+    'https://www.youtube.com/@SaadHassanMath'
+  ]
+};
+
+const authorSchema = {
+  '@type': 'Person',
+  name: author,
+  url: `${siteUrl}/about`,
+  jobTitle: 'Mathematics Author & Problem Solving Mentor'
+};
+
+let schemaData: Record<string, any> = {};
+
+if (type === 'problem') {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'LearningResource',
+    name: title,
+    headline: title,
+    description: description,
+    url: url,
+    educationalLevel: competition || 'Olympiad & Advanced Contest Mathematics',
+    educationalUse: 'Practice Problem, Mathematical Proof, Olympiad Preparation',
+    learningResourceType: 'Math Problem & Solution',
+    inLanguage: 'en',
+    author: authorSchema,
+    publisher: organizationSchema,
+    keywords: [competition, category, year ? `${competition} ${year}` : null, ...tags].filter(Boolean).join(', '),
+    datePublished: datePublished || undefined,
+    mainEntity: questionText ? {
+      '@type': 'Question',
+      name: title,
+      text: questionText.slice(0, 500),
+      acceptedAnswer: answerText ? {
+        '@type': 'Answer',
+        text: answerText.slice(0, 1000)
+      } : undefined
+    } : undefined
+  };
+} else if (type === 'article') {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'TechArticle',
+    headline: title,
+    description: description,
+    url: url,
+    image: image,
+    inLanguage: 'en',
+    genre: 'Mathematics & Proof Writing',
+    author: authorSchema,
+    publisher: organizationSchema,
+    datePublished: datePublished || undefined,
+    keywords: tags.join(', ')
+  };
+} else if (type === 'course') {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'Course',
+    name: title,
+    description: description,
+    url: url,
+    provider: organizationSchema,
+    instructor: authorSchema,
+    educationalLevel: courseDetails?.level || 'Intermediate to Advanced Olympiad',
+    timeRequired: courseDetails?.duration || undefined,
+    about: {
+      '@type': 'Thing',
+      name: courseDetails?.category || category || 'Mathematical Problem Solving'
+    },
+    hasCourseInstance: {
+      '@type': 'CourseInstance',
+      courseMode: 'online',
+      instructor: authorSchema
+    }
+  };
+} else if (type === 'book') {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'Book',
+    name: title,
+    description: description,
+    url: url,
+    author: authorSchema,
+    publisher: {
+      '@type': 'Organization',
+      name: bookDetails?.publisher || 'World Scientific / Narosa'
+    },
+    isbn: bookDetails?.isbn || undefined,
+    bookFormat: bookDetails?.format || 'Paperback / Digital PDF',
+    inLanguage: 'en'
+  };
+} else if (type === 'about') {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    name: title,
+    description: description,
+    url: url,
+    mainEntity: authorSchema
+  };
+} else if (type === 'collection') {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: title,
+    description: description,
+    url: url,
+    publisher: organizationSchema
+  };
+} else {
+  schemaData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'deMath',
+    alternateName: 'deMath Mathematical Archive',
+    url: siteUrl,
+    description: description,
+    publisher: organizationSchema,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${siteUrl}/problems?q={search_term_string}`,
+      'query-input': 'required name=search_term_string'
+    }
+  };
+}
+
+let breadcrumbSchema: Record<string, any> | null = null;
+if (breadcrumbs && breadcrumbs.length > 0) {
+  breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: breadcrumbs.map((b, idx) => ({
+      '@type': 'ListItem',
+      position: idx + 1,
+      name: b.name,
+      item: b.item
+    }))
+  };
+}
+---
+
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />
+{breadcrumbSchema && (
+  <script type="application/ld+json" set:html={JSON.stringify(breadcrumbSchema)} />
+)}

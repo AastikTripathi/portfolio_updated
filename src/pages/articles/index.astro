@@ -1,0 +1,273 @@
+---
+// src/pages/articles/index.astro
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+import SEOJsonLd from '../../components/SEOJsonLd.astro';
+
+const allArticles = await getCollection('articles');
+
+// 1. Dynamic tag compilation for the UI sidebar cloud
+const uniqueTagsMap = new Map<string, number>();
+
+allArticles.forEach(art => {
+  if (art.data.tags) {
+    art.data.tags.forEach(t => {
+      uniqueTagsMap.set(t, (uniqueTagsMap.get(t) || 0) + 1);
+    });
+  }
+});
+
+// Sort articles by publish date (newest first)
+const sortedArticles = allArticles.sort((a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime());
+
+// 2. Serialize necessary metadata
+const serializedArticles = sortedArticles.map(art => {
+  return {
+    id: art.id,
+    title: art.data.title,
+    tags: art.data.tags || [],
+    dateStr: art.data.publishDate.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  };
+});
+---
+
+<Layout 
+  title="Articles & Essays | Deep Thought & Education"
+  description="Read articles and essays about mathematics education, contest teaching philosophies, travel memoirs, and educational strategy."
+>
+  <SEOJsonLd
+    type="collection"
+    title="Articles and Essays"
+    description="Browse articles, essays, teaching philosophies, and thoughts on competition mathematics."
+    url={Astro.url.href}
+  />
+
+  <div class="min-h-screen bg-[#f5f5f2] relative overflow-hidden font-sans pt-12">
+    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
+         style="background-size: 24px 24px; background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px);">
+    </div>
+
+    <main class="max-w-7xl px-4 mx-auto sm:px-6 relative z-10 grid grid-cols-1 lg:grid-cols-4 gap-8 pb-24">
+
+      <!-- LEFT COLUMN: Filtering Sidebar -->
+      <div data-reveal class="lg:col-span-1 space-y-6">
+
+        <!-- Text Search -->
+        <div class="p-4 bg-white border-[3px] border-[#2a2a2a] rounded-xl shadow-[4px_4px_0px_0px_#2a2a2a] space-y-4">
+          <div>
+            <span class="block text-[11px] font-mono font-black tracking-widest text-neutral-400 mb-1 uppercase">Search Articles</span>
+            <input
+              type="text"
+              id="search-input"
+              placeholder="Search title or tags..."
+              class="w-full px-3 py-1.5 border-2 border-[#2a2a2a] rounded-lg text-xs font-mono focus:outline-none focus:bg-[#ebef70]/10"
+            />
+          </div>
+
+          <button id="reset-filters" class="w-full py-1.5 bg-neutral-100 hover:bg-neutral-200 border-2 border-[#2a2a2a] text-[#2a2a2a] font-mono text-xs font-bold rounded transition-colors uppercase tracking-wider">
+            Clear
+          </button>
+        </div>
+
+        <!-- Tag Cloud -->
+        <div class="p-5 bg-white border-[3px] border-[#2a2a2a] rounded-xl shadow-[4px_4px_0px_0px_#2a2a2a] space-y-3">
+          <div class="flex items-center justify-between border-b-2 border-[#2a2a2a] pb-1">
+            <h4 class="font-sketch text-lg font-bold">Tags</h4>
+            <button id="clear-tags-btn" class="hidden text-[10px] font-mono font-bold text-indigo-600 hover:underline uppercase">
+              Clear Tags
+            </button>
+          </div>
+
+          <div id="active-tags-container" class="hidden flex flex-wrap gap-1.5 p-2 bg-[#ebef70]/20 border-2 border-dashed border-[#2a2a2a] rounded-lg"></div>
+
+          <div class="flex flex-wrap gap-1.5">
+            {Array.from(uniqueTagsMap.entries()).map(([tag, count]) => (
+              <button data-tag-btn={tag} class="tag-btn px-2 py-0.5 rounded text-[11px] font-mono font-bold border bg-neutral-50 border-neutral-200 hover:border-[#2a2a2a] transition-all">
+                #{tag} ({count})
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <a href="/problems" class="inline-block text-xs font-mono font-bold text-neutral-500 underline hover:text-[#2a2a2a]">
+            ← View Problems Archive
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: Articles list -->
+      <div class="lg:col-span-3 space-y-6">
+        <div data-reveal class="border-b-[3px] border-[#2a2a2a] pb-4 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+          <div>
+            <h1 id="vault-title" class="font-sketch hero-heading font-semibold text-[#2a2a2a]">Articles & Essays</h1>
+            <p id="vault-counter" class="text-xs font-mono font-bold text-neutral-500 mt-1">Loading publications...</p>
+          </div>
+        </div>
+
+        <!-- The Target Container DOM Node -->
+        <div id="articles-mount" class="space-y-6"></div>
+
+        <!-- Pagination Controls -->
+        <div class="flex items-center justify-center gap-2 pt-6 border-t-[3px] border-[#2a2a2a] font-mono text-xs select-none">
+          <button id="prev-page" class="w-8 h-8 flex items-center justify-center bg-white border-2 border-[#2a2a2a] rounded-lg shadow-[2px_2px_0px_#2a2a2a] disabled:opacity-40 disabled:pointer-events-none font-bold active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+            ←
+          </button>
+          <div id="page-numbers" class="flex items-center gap-1.5"></div>
+          <button id="next-page" class="w-8 h-8 flex items-center justify-center bg-white border-2 border-[#2a2a2a] rounded-lg shadow-[2px_2px_0px_#2a2a2a] disabled:opacity-40 disabled:pointer-events-none font-bold active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all">
+            →
+          </button>
+        </div>
+      </div>
+    </main>
+  </div>
+</Layout>
+
+<script define:vars={{ serializedArticles }}>
+  function initArticles() {
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
+    const selectedTags = new Set();
+
+    // Sync from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('tag')) selectedTags.add(urlParams.get('tag'));
+    const searchInput = document.getElementById('search-input');
+    if (searchInput && urlParams.get('search')) searchInput.value = urlParams.get('search');
+
+    function renderPipeline() {
+      const input = document.getElementById('search-input');
+      const searchVal = input ? input.value.toLowerCase().trim() : '';
+
+      const filtered = serializedArticles.filter(art => {
+        if (selectedTags.size > 0 && !art.tags.some(t => selectedTags.has(t))) return false;
+        if (searchVal) return art.title.toLowerCase().includes(searchVal) || art.tags.some(t => t.toLowerCase().includes(searchVal));
+        return true;
+      });
+
+      const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
+      if (currentPage > totalPages) currentPage = totalPages;
+      const pageItems = filtered.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+
+      const mountNode = document.getElementById('articles-mount');
+      if (!mountNode) return;
+
+      if (pageItems.length === 0) {
+        mountNode.innerHTML = `<div class="p-12 border-[3px] border-dashed border-neutral-300 rounded-2xl text-center font-mono text-xs text-neutral-400 bg-white">No articles found matching the query. Try widening filters.</div>`;
+      } else {
+        mountNode.innerHTML = pageItems.map(art => `
+          <div class="article-card group block p-6 bg-white border-[3px] border-[#2a2a2a] rounded-2xl shadow-[6px_6px_0px_0px_#2a2a2a] hover:shadow-[8px_8px_0px_0px_#2a2a2a] hover:-translate-x-[2px] hover:-translate-y-[2px] transition-all duration-200 relative overflow-hidden" style="opacity:0;transform:translateY(20px);">
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-3">
+              <span class="text-xs text-neutral-400 font-mono">${art.dateStr}</span>
+            </div>
+            <h3 class="text-2xl font-black text-[#2a2a2a] group-hover:text-indigo-600 transition-colors mb-2">${art.title}</h3>
+            ${art.tags.length ? `<div class="flex flex-wrap gap-1.5 mb-4">${art.tags.map(t => `<span class="text-[10px] font-mono text-neutral-500 bg-neutral-100 border border-neutral-200 px-1.5 py-0.5 rounded">#${t}</span>`).join('')}</div>` : ''}
+            <div class="flex justify-between items-center pt-2 border-t border-dashed border-neutral-200">
+              <a href="/articles/${art.id}" class="inline-flex items-center gap-1 text-xs font-black uppercase tracking-wider text-indigo-600 underline decoration-2">Read Article →</a>
+            </div>
+          </div>
+        `).join('');
+
+        // Staggered fade-in for injected cards
+        const cards = mountNode.querySelectorAll('.article-card');
+        cards.forEach((card, i) => {
+          requestAnimationFrame(() => {
+            setTimeout(() => {
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0)';
+              card.style.transition = 'opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1)';
+            }, i * 80);
+          });
+        });
+      }
+
+
+
+      // Active tags bar
+      const activeTagsContainer = document.getElementById('active-tags-container');
+      const clearTagsBtn = document.getElementById('clear-tags-btn');
+      if (selectedTags.size > 0) {
+        if (activeTagsContainer) {
+          activeTagsContainer.classList.remove('hidden');
+          activeTagsContainer.innerHTML = Array.from(selectedTags).map(t => `
+            <button data-remove-tag="${t}" class="px-2 py-0.5 rounded text-[11px] font-mono font-bold border-2 border-[#2a2a2a] bg-[#ebef70] text-[#2a2a2a] shadow-[2px_2px_0px_#2a2a2a] flex items-center gap-1 hover:bg-red-200 transition-colors">
+              #${t} <span class="font-black text-xs">✕</span>
+            </button>
+          `).join('');
+          activeTagsContainer.querySelectorAll('[data-remove-tag]').forEach(b => {
+            b.addEventListener('click', e => { e.stopPropagation(); selectedTags.delete(b.getAttribute('data-remove-tag')); currentPage = 1; renderPipeline(); });
+          });
+        }
+        if (clearTagsBtn) clearTagsBtn.classList.remove('hidden');
+      } else {
+        if (activeTagsContainer) { activeTagsContainer.classList.add('hidden'); activeTagsContainer.innerHTML = ''; }
+        if (clearTagsBtn) clearTagsBtn.classList.add('hidden');
+      }
+
+      // Counter
+      const counterEl = document.getElementById('vault-counter');
+      if (counterEl) counterEl.textContent = `Showing ${filtered.length} article${filtered.length === 1 ? '' : 's'}.`;
+
+      // Page number buttons
+      const pageNumbersContainer = document.getElementById('page-numbers');
+      if (pageNumbersContainer) {
+        pageNumbersContainer.innerHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+          const btn = document.createElement('button');
+          btn.className = `w-8 h-8 flex items-center justify-center border-2 border-[#2a2a2a] rounded-lg font-bold transition-all ${i === currentPage ? 'bg-[#2a2a2a] text-white' : 'bg-white text-[#2a2a2a] shadow-[2px_2px_0px_#2a2a2a] hover:bg-neutral-100'}`;
+          btn.textContent = i;
+          btn.addEventListener('click', () => { currentPage = i; renderPipeline(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+          pageNumbersContainer.appendChild(btn);
+        }
+      }
+
+      const prevBtn = document.getElementById('prev-page');
+      if (prevBtn) prevBtn.disabled = currentPage === 1;
+      const nextBtn = document.getElementById('next-page');
+      if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+
+      // Tag button styling
+      document.querySelectorAll('.tag-btn').forEach(btn => {
+        const tagVal = btn.getAttribute('data-tag-btn');
+        if (selectedTags.has(tagVal)) {
+          btn.classList.add('bg-[#2a2a2a]', 'text-white', 'border-[#2a2a2a]');
+          btn.classList.remove('bg-neutral-50', 'text-[#2a2a2a]');
+        } else {
+          btn.classList.remove('bg-[#2a2a2a]', 'text-white', 'border-[#2a2a2a]');
+          btn.classList.add('bg-neutral-50', 'text-[#2a2a2a]');
+        }
+      });
+    }
+
+    // Hook up listeners
+    if (searchInput) searchInput.addEventListener('input', () => { currentPage = 1; renderPipeline(); });
+
+    document.querySelectorAll('.tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tag = btn.getAttribute('data-tag-btn');
+        if (selectedTags.has(tag)) { selectedTags.delete(tag); } else { selectedTags.add(tag); }
+        currentPage = 1; renderPipeline();
+      });
+    });
+
+    const clearTagsBtn = document.getElementById('clear-tags-btn');
+    if (clearTagsBtn) clearTagsBtn.addEventListener('click', () => { selectedTags.clear(); currentPage = 1; renderPipeline(); });
+
+    const resetBtn = document.getElementById('reset-filters');
+    if (resetBtn) resetBtn.addEventListener('click', () => { const inp = document.getElementById('search-input'); if (inp) inp.value = ''; selectedTags.clear(); currentPage = 1; renderPipeline(); });
+
+    const prevBtn = document.getElementById('prev-page');
+    if (prevBtn) prevBtn.addEventListener('click', () => { if (currentPage > 1) { currentPage--; renderPipeline(); window.scrollTo({ top: 0, behavior: 'smooth' }); } });
+
+    const nextBtn = document.getElementById('next-page');
+    if (nextBtn) nextBtn.addEventListener('click', () => { currentPage++; renderPipeline(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+
+    renderPipeline();
+  }
+
+  // Boot immediately on script evaluation and on astro:page-load navigation
+  initArticles();
+  document.addEventListener('astro:page-load', initArticles);
+</script>
+
+

@@ -1,0 +1,141 @@
+---
+// src/components/Embed.astro
+interface Props {
+  type?: 'youtube' | 'wolfram' | 'geogebra' | 'audio';
+  id?: string;
+  query?: string;
+  url?: string;
+  title?: string;
+}
+
+const {
+  type = 'youtube',
+  id = '',
+  query = '',
+  url = '',
+  title = 'Interactive Content'
+} = Astro.props;
+
+// Helper to extract clean YouTube ID from full URLs if needed
+function getYouTubeId(input: string): string {
+  if (!input) return '';
+  if (input.includes('youtu.be/')) {
+    return input.split('youtu.be/')[1].split('?')[0];
+  }
+  if (input.includes('youtube.com/watch')) {
+    const params = new URLSearchParams(input.split('?')[1]);
+    return params.get('v') || input;
+  }
+  return input;
+}
+
+const ytId = type === 'youtube' ? getYouTubeId(id || url) : '';
+---
+
+<div class="my-8 bg-white border-[3px] border-[#2a2a2a] rounded-xl p-4 shadow-[6px_6px_0px_0px_#2a2a2a]">
+  <!-- Header Bar -->
+  <div class="flex items-center justify-between gap-2 pb-3 mb-3 border-b-2 border-dashed border-neutral-200 font-mono text-xs font-bold text-[#2a2a2a]">
+    <div class="flex items-center gap-2">
+      {type === 'youtube' && <span class="px-2 py-0.5 bg-red-100 border border-red-300 text-red-700 rounded text-[10px] font-black uppercase">Video</span>}
+      {type === 'wolfram' && <span class="px-2 py-0.5 bg-amber-100 border border-amber-300 text-amber-800 rounded text-[10px] font-black uppercase">Wolfram Demo</span>}
+      {type === 'geogebra' && <span class="px-2 py-0.5 bg-sky-100 border border-sky-300 text-sky-800 rounded text-[10px] font-black uppercase">GeoGebra</span>}
+      {type === 'audio' && <span class="px-2 py-0.5 bg-emerald-100 border border-emerald-300 text-emerald-800 rounded text-[10px] font-black uppercase">Audio</span>}
+      <span>{title}</span>
+    </div>
+    <span class="text-[10px] text-neutral-400 font-mono uppercase tracking-wider">// Embed</span>
+  </div>
+
+  <!-- YOUTUBE EMBED -->
+  {type === 'youtube' && ytId && (
+    <div class="relative w-full overflow-hidden rounded-lg border-2 border-[#2a2a2a] bg-black" style="padding-top: 56.25%;">
+      <iframe
+        src={`https://www.youtube-nocookie.com/embed/${ytId}`}
+        title={title}
+        class="absolute top-0 left-0 w-full h-full"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+        loading="lazy"
+      ></iframe>
+    </div>
+  )}
+
+  <!-- WOLFRAM DEMONSTRATION / ALPHA EMBED -->
+  {type === 'wolfram' && (
+    <div class="w-full overflow-hidden rounded-lg border-2 border-[#2a2a2a] bg-neutral-50 p-2 min-h-[350px] flex flex-col items-center justify-center">
+      {id ? (
+        <div class="w-full space-y-2 text-center">
+          <iframe
+            src={`https://www.wolframcloud.com/obj/demonstrations/${id}?_embed=1`}
+            title={title}
+            class="w-full h-[500px] border-0 rounded bg-white"
+            loading="lazy"
+          ></iframe>
+          <div class="pt-1">
+            <a
+              href={`https://demonstrations.wolfram.com/${id}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center gap-1 text-xs font-mono font-bold text-indigo-600 hover:underline"
+            >
+              Open original Wolfram Demonstration ↗
+            </a>
+          </div>
+        </div>
+      ) : query ? (
+        <iframe
+          src={`https://www.wolframalpha.com/widget/input/?input=${encodeURIComponent(query)}&output=popup`}
+          title={title}
+          class="w-full h-[350px] border-0 rounded"
+          loading="lazy"
+        ></iframe>
+      ) : (
+        <p class="font-mono text-xs text-neutral-400">Missing Wolfram Demonstration ID or Query parameter.</p>
+      )}
+    </div>
+  )}
+
+  <!-- GEOGEBRA EMBED -->
+  {type === 'geogebra' && id && (
+    <div class="relative w-full overflow-hidden rounded-lg border-2 border-[#2a2a2a] bg-white min-h-[400px]">
+      <iframe
+        src={`https://www.geogebra.org/material/iframe/id/${id}/width/800/height/500/border/888888/sfsb/true/smb/false/stb/false/stbh/false/ai/true/asb/false/sri/true/rc/false/ld/false/sdz/true/ctl/false`}
+        title={title}
+        class="w-full h-[450px] border-0"
+        loading="lazy"
+      ></iframe>
+    </div>
+  )}
+
+  <!-- AUDIO / PODCAST EMBED (Direct MP3, Spotify, SoundCloud) -->
+  {type === 'audio' && (url || id) && (
+    <div class="p-2 bg-neutral-50 rounded-lg border-2 border-[#2a2a2a]">
+      {(url || id).includes('spotify.com') ? (
+        <iframe
+          src={(url || id).replace('spotify.com/episode/', 'spotify.com/embed/episode/').replace('spotify.com/track/', 'spotify.com/embed/track/').replace('spotify.com/show/', 'spotify.com/embed/show/')}
+          width="100%"
+          height="152"
+          frameBorder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+          class="rounded-md"
+        ></iframe>
+      ) : (url || id).includes('soundcloud.com') ? (
+        <iframe
+          width="100%"
+          height="166"
+          scrolling="no"
+          frameBorder="no"
+          allow="autoplay"
+          src={`https://w.soundcloud.com/player/?url=${encodeURIComponent(url || id)}&color=%23ff5500&auto_play=false&hide_related=false&show_comments=true&show_user=true&show_reposts=false&show_teaser=true`}
+          loading="lazy"
+          class="rounded-md"
+        ></iframe>
+      ) : (
+        <audio controls class="w-full">
+          <source src={url || id} />
+          Your browser does not support the audio element.
+        </audio>
+      )}
+    </div>
+  )}
+</div>

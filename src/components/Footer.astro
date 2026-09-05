@@ -1,0 +1,71 @@
+---
+// src/components/Footer.astro
+---
+
+<footer class="border-t-[3px] border-[#2a2a2a] bg-[#eaeaea] font-sans py-12 mt-auto relative z-10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+    
+    <!-- Left Column: Biography & System Info -->
+    <div class="lg:col-span-6 space-y-4 text-center lg:text-left">
+      <div class="inline-block px-3 py-1 border-2 border-[#2a2a2a] bg-[#ebef70] font-mono text-[10px] font-black tracking-widest uppercase rounded-full shadow-[2px_2px_0px_#2a2a2a]">
+        Systematic Mathematics Education
+      </div>
+      <h4 class="text-2xl sm:text-3xl font-black tracking-tight text-[#2a2a2a] uppercase">
+        Master Advanced Mathematics
+      </h4>
+      <p class="text-xs font-mono text-neutral-600 leading-relaxed font-bold max-w-xl">
+        Transform your mathematical skills through structured learning guided by Saad Hassan, an accomplished educator with 8+ years as National Head of Olympiad Division at VMC and advanced credentials from North Carolina State University. Achieve Olympiad success and measurable excellence.
+      </p>
+    </div>
+
+    <!-- Right Column: Contact Details, Response Time, and Social Links -->
+    <div class="lg:col-span-6 flex flex-col items-center lg:items-end space-y-4">
+      <span class="font-mono text-xs font-black text-[#2a2a2a] tracking-wider uppercase">// Connect With Me</span>
+      
+      <!-- Email Badge -->
+      <div class="flex flex-col items-center lg:items-end gap-1">
+        <a 
+          href="mailto:DeMath@saadhassan.in" 
+          class="px-5 py-2.5 border-2 border-[#2a2a2a] bg-[#ebef70] text-xs font-mono font-black text-[#2a2a2a] rounded-lg shadow-[3px_3px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#2a2a2a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-1.5"
+        >
+          DeMath@saadhassan.in
+        </a>
+        <span class="text-[9px] font-mono text-neutral-600 font-bold uppercase tracking-wider flex items-center gap-1 mt-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span> Response Time: Within 24 Hours
+        </span>
+      </div>
+
+      <!-- Social Links (LinkedIn & YouTube) -->
+      <div class="flex items-center gap-3 pt-2">
+        <a 
+          href="https://www.linkedin.com/in/saad-hassan-97632413" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="p-2 border-2 border-[#2a2a2a] bg-neutral-50 text-[#2a2a2a] rounded-lg hover:bg-indigo-100 shadow-[2px_2px_0px_#2a2a2a] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+          aria-label="LinkedIn Profile"
+        >
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
+          </svg>
+        </a>
+        <a 
+          href="https://www.youtube.com/@mathematicalheights8512" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="p-2 border-2 border-[#2a2a2a] bg-neutral-50 text-[#2a2a2a] rounded-lg hover:bg-red-100 shadow-[2px_2px_0px_#2a2a2a] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+          aria-label="YouTube Channel"
+        >
+          <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M23.498 6.163a3.003 3.003 0 0 0-2.11-2.107C19.53 3.5 12 3.5 12 3.5s-7.53 0-9.388.556a3.003 3.003 0 0 0-2.11 2.107C0 8.017 0 12 0 12s0 3.983.502 5.837a3.003 3.003 0 0 0 2.11 2.108C4.47 20.5 12 20.5 12 20.5s7.53 0 9.388-.555a3.003 3.003 0 0 0 2.11-2.108C24 15.983 24 12 24 12s0-3.983-.502-5.837zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 mt-6 border-t border-dashed border-neutral-400 text-center font-mono text-[10px] text-neutral-600 font-bold">
+    &copy; {new Date().getFullYear()}, Saad Hassan, All Rights Reserved.
+  </div>
+</footer>
+

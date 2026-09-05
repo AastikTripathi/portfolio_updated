@@ -1,0 +1,38 @@
+# Robots.txt for deMath (https://saadhassan.in)
+# Optimized for Google, Bing, and AI Knowledge Engines (GPTBot, PerplexityBot, ClaudeBot)
+
+User-agent: *
+Allow: /
+Disallow: /keystatic/
+Disallow: /api/
+
+# Specific AI & Search Engine Crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+# Canonical Sitemap Location
+Sitemap: https://saadhassan.in/sitemap-index.xml

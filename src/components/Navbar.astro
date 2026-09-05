@@ -1,0 +1,245 @@
+---
+// src/components/Navbar.astro
+import { getCollection } from 'astro:content';
+
+const categories = await getCollection('categories');
+const superCategories = [
+  { code: 'JEE', name: 'JEE Main / Advanced' },
+  { code: 'ISI', name: 'ISI Entrance' },
+  { code: 'CMI', name: 'CMI Entrance' },
+  { code: 'PUTNAM', name: 'Putnam Competition' },
+  { code: 'AIME', name: 'AIME Invitational' },
+  { code: 'IOQM', name: 'IOQM Qualifier' },
+  { code: 'HMMT', name: 'HMMT Tournament' },
+  { code: 'RMO', name: 'RMO Olympiad' },
+  { code: 'INMO', name: 'INMO Olympiad' },
+  { code: 'IMO', name: 'IMO World Final' },
+  { code: 'TST', name: 'Team Selection Test' },
+  { code: 'RMM', name: 'Romanian Master' },
+  { code: 'BMO', name: 'British Olympiad' }
+];
+const pathname = Astro.url.pathname;
+---
+
+<header class="sticky top-0 z-50 border-b-[3px] border-[#2a2a2a] bg-white font-sans">
+  <div class="flex items-center justify-between h-16 max-w-7xl px-4 mx-auto sm:px-6">
+
+    <!-- Branding Logo Group -->
+    <a href="/" class="flex items-center gap-2.5 group">
+       <div class="h-10 w-10 rounded-lg bg-white border-2 border-[#2a2a2a] p-1 flex items-center justify-center shadow-[2px_2px_0px_#2a2a2a] group-hover:bg-[#ebef70] group-hover:translate-x-[1px] group-hover:translate-y-[1px] group-hover:shadow-[1px_1px_0px_#2a2a2a] transition-all shrink-0">
+          <img src="/Group 1 (3).png" alt="deMath Logo" class="w-full h-full object-contain" />
+       </div>
+       <div class="flex flex-col text-left">
+          <span class="font-poppins text-lg sm:text-xl font-bold tracking-tight text-[#2a2a2a] leading-none">
+             deMath
+          </span>
+          <span class="font-poppins text-[10px] font-medium text-neutral-500 tracking-tight leading-tight mt-0.5">
+             mathematical archive
+          </span>
+       </div>
+    </a>
+
+    <!-- Navigation Menu Matrix -->
+    <nav class="hidden md:flex items-center space-x-1 font-mono text-xs font-bold relative">
+
+      <a href="/" class={`px-3 py-2 rounded border-2 transition-all ${pathname === '/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a] hover:bg-neutral-50'}`}>
+        HOME
+      </a>
+
+      <a href="/about" class={`px-3 py-2 rounded border-2 transition-all ${pathname === '/about' || pathname === '/about/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a] hover:bg-neutral-50'}`}>
+        ABOUT
+      </a>
+
+
+      <!-- EXPLORE MULTI-TIER DROPDOWN -->
+      <div class="relative dropdown-container group">
+        <button class="dropdown-trigger px-3 py-2 rounded border-2 border-transparent hover:border-[#2a2a2a] group-hover:border-[#2a2a2a] group-hover:bg-neutral-50 flex items-center gap-1 transition-all cursor-pointer">
+          PROBLEMS <span class="text-[9px] group-hover:rotate-180 transition-transform duration-200">▼</span>
+        </button>
+
+
+        <div class="dropdown-menu hidden group-hover:md:block absolute top-full left-1/2 -translate-x-1/2 md:max-lg:-translate-x-[35%] pt-1.5 w-[680px] max-w-[calc(100vw-2rem)] z-50">
+          <div class="bg-white border-[3px] border-[#2a2a2a] rounded-2xl shadow-[8px_8px_0px_0px_#2a2a2a] p-5 grid grid-cols-12 gap-5">
+            <!-- Left: Target Exam Divisions (13 Competitions displayed in 2 columns) -->
+            <div class="col-span-8 space-y-3 border-r-2 border-dashed border-neutral-200 pr-5">
+              <div class="flex items-center justify-between border-b-2 border-[#2a2a2a]/10 pb-1.5">
+                <span class="text-[11px] text-neutral-400 font-mono font-bold tracking-wider">// Target Competitions</span>
+                <span class="text-[10px] font-mono text-neutral-400">13 Exams</span>
+              </div>
+              <div class="grid grid-cols-2 gap-x-2 gap-y-1">
+                {superCategories.map((exam) => (
+                  <a 
+                    href={`/problems?exam=${exam.code}`} 
+                    class="flex items-center gap-2 p-1.5 rounded-lg text-xs font-mono font-bold hover:bg-[#ebef70] hover:text-[#2a2a2a] transition-all text-[#2a2a2a] border border-transparent hover:border-[#2a2a2a]"
+                  >
+                    <span class="text-neutral-400 text-[10px]">■</span>
+                    <span class="truncate">{exam.name}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <!-- Right: Mathematical Sub-Topics -->
+            <div class="col-span-4 space-y-3">
+              <div class="flex items-center justify-between border-b-2 border-[#2a2a2a]/10 pb-1.5">
+                <span class="text-[11px] text-neutral-400 font-mono font-bold tracking-wider">// Disciplines</span>
+                <span class="text-[10px] font-mono text-neutral-400">Topics</span>
+              </div>
+              <div class="space-y-1">
+                {categories.map((cat) => {
+                  const cleanCatId = cat.id.replace(/\.(yaml|yml)$/, '');
+                  return (
+                    <a
+                      href={`/category/${cleanCatId}`}
+                      class="flex items-center justify-between p-1.5 rounded-lg text-xs font-mono font-bold text-neutral-700 hover:text-[#2a2a2a] hover:bg-[#ebef70] transition-all border border-transparent hover:border-[#2a2a2a]"
+                    >
+                      <span>• {cat.data.name}</span>
+                      <span class="text-neutral-400 text-[10px]">→</span>
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+
+            <!-- Bottom: Direct Link to Vault -->
+            <div class="col-span-12 pt-3 border-t-2 border-dashed border-neutral-200 flex items-center justify-between bg-neutral-50/80 -mx-5 -mb-5 px-5 py-3 rounded-b-[13px]">
+              <a href="/problems" class="text-xs font-mono font-bold text-[#2a2a2a] hover:text-indigo-600 hover:underline flex items-center gap-1.5">
+                <span>Explore All Problems in Vault →</span>
+              </a>
+              <span class="text-[10px] font-mono font-bold text-neutral-400">Zero Rote • Pure Rigor</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <a href="/articles" class={`px-3 py-2 rounded border-2 transition-all ${pathname === '/articles' || pathname === '/articles/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a] hover:bg-neutral-50'}`}>
+        ARTICLES
+      </a>
+
+      <a href="/techniques" class={`px-3 py-2 rounded border-2 transition-all ${pathname.startsWith('/techniques') ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a] hover:bg-neutral-50'}`}>
+        TECHNIQUES
+      </a>
+
+      <a href="/resources" class={`px-3 py-2 rounded border-2 transition-all ${pathname.startsWith('/resources') ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a] hover:bg-neutral-50'}`}>
+        RESOURCES
+      </a>
+
+      <a href="/courses" class="ml-2 px-3 py-1.5 rounded bg-[#ebef70] border-2 border-[#2a2a2a] shadow-[2px_2px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_#2a2a2a] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all font-mono font-bold text-xs text-[#2a2a2a]">
+        LIVE CLASSES →
+      </a>
+
+    </nav>
+
+    <!-- Mobile Hamburger Toggle Button -->
+    <div class="flex md:hidden">
+      <button 
+        id="mobile-menu-btn" 
+        aria-label="Toggle Navigation Menu"
+        class="w-8.5 h-8.5 flex items-center justify-center border-2 border-[#2a2a2a] rounded-lg bg-white shadow-[1.5px_1.5px_0px_#2a2a2a] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
+      >
+        <svg id="hamburger-icon" class="w-4.5 h-4.5 text-[#2a2a2a]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 6h16M4 12h16M4 18h16"/>
+        </svg>
+        <svg id="close-icon" class="w-4.5 h-4.5 text-[#2a2a2a] hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+
+  </div>
+
+  <!-- Mobile Collapsible Navigation Drawer -->
+  <div id="mobile-menu" class="hidden md:hidden border-t-2 border-dashed border-[#2a2a2a] bg-white px-4 py-5 space-y-3 max-h-[80vh] overflow-y-auto">
+    <a href="/" class={`block px-3 py-2 rounded-lg font-mono text-sm font-bold border-2 ${pathname === '/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a]'}`}>
+      HOME
+    </a>
+
+    <a href="/about" class={`block px-3 py-2 rounded-lg font-mono text-sm font-bold border-2 ${pathname === '/about' || pathname === '/about/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a]'}`}>
+      ABOUT
+    </a>
+
+
+    <a href="/problems" class={`block px-3 py-2 rounded-lg font-mono text-sm font-bold border-2 ${pathname === '/problems' || pathname === '/problems/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a]'}`}>
+      PROBLEM ARCHIVE
+    </a>
+
+    <a href="/articles" class={`block px-3 py-2 rounded-lg font-mono text-sm font-bold border-2 ${pathname === '/articles' || pathname === '/articles/' ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a]'}`}>
+      ARTICLES
+    </a>
+
+    <a href="/techniques" class={`block px-3 py-2 rounded-lg font-mono text-sm font-bold border-2 ${pathname.startsWith('/techniques') ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a]'}`}>
+      TECHNIQUES
+    </a>
+
+    <a href="/resources" class={`block px-3 py-2 rounded-lg font-mono text-sm font-bold border-2 ${pathname.startsWith('/resources') ? 'border-[#2a2a2a] bg-[#ebef70] shadow-[2px_2px_0px_#2a2a2a]' : 'border-transparent hover:border-[#2a2a2a]'}`}>
+      RESOURCES
+    </a>
+
+    <!-- Primary CTA Button -->
+    <div class="pt-2 border-t border-dashed border-neutral-200">
+      <a href="/courses" class="block px-3 py-2.5 bg-[#ebef70] border-2 border-[#2a2a2a] rounded-lg font-mono text-xs font-bold text-center shadow-[2px_2px_0px_#2a2a2a] hover:bg-yellow-300 transition-all">
+        LIVE CLASSES →
+      </a>
+    </div>
+  </div>
+</header>
+
+<script>
+  function setupDropdownEngine() {
+    const containers = document.querySelectorAll('.dropdown-container');
+
+    containers.forEach(container => {
+      const trigger = container.querySelector('.dropdown-trigger');
+      const menu = container.querySelector('.dropdown-menu');
+
+      if (!trigger || !menu) return;
+
+      const freshTrigger = trigger.cloneNode(true) as HTMLElement;
+      trigger.parentNode!.replaceChild(freshTrigger, trigger);
+
+      freshTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
+        containers.forEach(c => {
+          if (c !== container) c.querySelector('.dropdown-menu')?.classList.add('hidden');
+        });
+        menu.classList.toggle('hidden');
+      });
+    });
+
+    // Mobile Hamburger Toggle Handler
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hamburgerIcon = document.getElementById('hamburger-icon');
+    const closeIcon = document.getElementById('close-icon');
+
+    if (mobileBtn && mobileMenu) {
+      const freshBtn = mobileBtn.cloneNode(true) as HTMLElement;
+      mobileBtn.parentNode!.replaceChild(freshBtn, mobileBtn);
+
+      freshBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const isOpen = !mobileMenu.classList.contains('hidden');
+        if (isOpen) {
+          mobileMenu.classList.add('hidden');
+          hamburgerIcon?.classList.remove('hidden');
+          closeIcon?.classList.add('hidden');
+        } else {
+          mobileMenu.classList.remove('hidden');
+          hamburgerIcon?.classList.add('hidden');
+          closeIcon?.classList.remove('hidden');
+        }
+      });
+    }
+  }
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+  });
+
+  // Run on first load AND after every View Transitions navigation
+  document.addEventListener('DOMContentLoaded', setupDropdownEngine);
+  document.addEventListener('astro:page-load', setupDropdownEngine);
+</script>

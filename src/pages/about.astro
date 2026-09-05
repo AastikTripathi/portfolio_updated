@@ -1,0 +1,252 @@
+---
+// src/pages/about.astro
+import Layout from '../layouts/Layout.astro';
+import SEOJsonLd from '../components/SEOJsonLd.astro';
+---
+
+<Layout 
+  title="About deMath | Philosophy & Founder Saad Hassan"
+  description="Saad Hassan is an author, educator, and proponent of first-principles mathematics. Discover the philosophy, books, and pedagogy behind deMath."
+>
+  <SEOJsonLd
+    type="about"
+    title="About deMath & Saad Hassan"
+    description="deMath is an independent mathematical institute and problem-solving vault founded by Saad Hassan."
+    url={Astro.url.href}
+    author="Saad Hassan"
+    breadcrumbs={[
+      { name: 'Home', item: 'https://saadhassan.in/' },
+      { name: 'About deMath', item: Astro.url.href }
+    ]}
+  />
+
+  <div class="min-h-screen bg-[#f5f5f2] text-[#2a2a2a] relative overflow-hidden font-sans selection:bg-[#ebef70] py-12 sm:py-16">
+
+    <!-- Blueprint Paper Dot Grid Background -->
+    <div class="absolute inset-0 z-0 opacity-[0.04] pointer-events-none"
+         style="background-size: 24px 24px; background-image: linear-gradient(to right, #000 1px, transparent 1px), linear-gradient(to bottom, #000 1px, transparent 1px);">
+    </div>
+
+    <main class="max-w-5xl px-4 mx-auto sm:px-6 relative z-10 space-y-12">
+
+      <!-- HERO INTRO BLOCK -->
+      <section data-reveal class="space-y-6 text-left border-b-[3px] border-[#2a2a2a] pb-10">
+        <div class="inline-flex items-center gap-x-2 px-4 py-1.5 border-[2px] border-[#2a2a2a] rounded-full bg-white font-mono text-xs font-bold shadow-[2px_2px_0px_#2a2a2a]">
+          <span class="w-2 h-2 rounded-full bg-[#ebef70] border border-[#2a2a2a]"></span>
+          <span>About deMath</span>
+        </div>
+
+        <h1 class="font-sketch hero-heading font-semibold text-[#2a2a2a] leading-[1.1]">
+          Mathematics as an <br class="hidden sm:inline" />
+          <span class="underline decoration-[6px] decoration-[#ebef70]">art and a discipline.</span>
+        </h1>
+
+        <p class="text-base sm:text-lg font-medium text-neutral-700 max-w-3xl leading-relaxed font-sans">
+          deMath is an open mathematical archive for students and educators. Mathematics is not a collection of formulae to be memorised, but a discipline to be practiced, understood and discovered from first principles.
+        </p>
+      </section>
+
+      <!-- FOUNDER SPOTLIGHT CARD (RICH BLACK AESTHETIC) -->
+      <section data-reveal class="bg-[#2a2a2a] text-white border-[3px] border-[#2a2a2a] rounded-2xl p-6 sm:p-10 shadow-[8px_8px_0px_0px_#ebef70] relative overflow-hidden space-y-8">
+        <div class="absolute top-0 right-0 bg-[#ebef70] border-b-2 border-l-2 border-[#2a2a2a] px-4 py-1.5 font-mono text-[10px] font-black text-[#2a2a2a] uppercase tracking-wider">
+          About the Author
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start pt-2">
+
+          <!-- Founder Portrait Box with Neo-Brutalist Hexagon Backdrop -->
+          <div class="md:col-span-4 flex flex-col items-center text-center space-y-4">
+            <div class="relative w-56 h-52 sm:w-64 sm:h-60 flex items-center justify-center select-none group pt-1">
+              <!-- Geometric Hexagon SVG Frame -->
+              <svg viewBox="0 0 220 200" class="w-full h-full filter drop-shadow-[5px_5px_0px_#000000] transition-transform duration-300 group-hover:scale-[1.02]">
+                <polygon 
+                  points="55,10 165,10 212,100 165,190 55,190 8,100" 
+                  fill="#ebef70" 
+                  stroke="#ffffff" 
+                  stroke-width="5" 
+                  stroke-linejoin="round" 
+                />
+              </svg>
+
+              <!-- Real Teacher Cutout Portrait -->
+              <img 
+                src="/portrait.png" 
+                alt="Saad Hassan - Founder and Educator" 
+                class="absolute bottom-3 w-44 sm:w-52 h-auto max-h-[96%] object-contain z-10 filter drop-shadow-[0px_6px_14px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-105"
+                loading="eager"
+              />
+
+              <!-- Floating Founder Badge -->
+              <span class="absolute bottom-1 right-3 z-20 px-2.5 py-0.5 bg-white text-[#2a2a2a] border-2 border-[#2a2a2a] rounded-full font-mono text-[9px] font-black uppercase tracking-wider shadow-[2px_2px_0px_#000000]">
+                Founder & Mentor
+              </span>
+            </div>
+
+            <div>
+              <h2 class="hero-heading font-semibold text-white tracking-tight">Saad Hassan</h2>
+              <span class="inline-block px-3 py-0.5 mt-1.5 bg-[#ebef70] text-[#2a2a2a] text-[11px] font-mono font-bold rounded">
+                Author & Educator
+              </span>
+            </div>
+
+            <!-- Credentials Badges -->
+            <div class="w-full pt-2 flex flex-col gap-2 text-left font-mono text-[11px]">
+              <div class="p-2.5 bg-white/5 border border-white/15 rounded-lg">
+                <span class="font-bold text-white block">Ex-Head of Olympiads</span>
+                <span class="text-neutral-400 text-[10px]">Vidyamandir Classes (VMC)</span>
+              </div>
+              <div class="p-2.5 bg-white/5 border border-white/15 rounded-lg">
+                <span class="font-bold text-white block">Mentor and Planner</span>
+                <span class="text-neutral-400 text-[10px]">Centre of Excellence</span>
+              </div>
+
+              <div class="p-2.5 bg-[#ebef70]/10 border border-[#ebef70]/30 rounded-lg">
+                <span class="font-bold text-[#ebef70] block">Published Works</span>
+                <span class="text-neutral-300 text-[10px]">The Olympiad Companion & Problem Books</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Founder Biography Body -->
+          <div class="md:col-span-8 space-y-5 text-left border-t-2 md:border-t-0 md:border-l-2 border-dashed border-neutral-600 pt-6 md:pt-0 md:pl-8 font-sans">
+            <h3 class="hero-heading font-semibold text-[#ebef70] leading-snug">
+              "What is lost when mathematics is reduced to formulae, techniques, and exam strategies?"
+            </h3>
+            
+            <p class="text-sm sm:text-base text-neutral-200 leading-relaxed font-normal">
+              <strong class="text-white">Saad Hassan</strong> is an author, educator and a fervent proponent of learning mathematics from first principles.
+            </p>
+
+            <p class="text-sm sm:text-base text-neutral-300 leading-relaxed font-normal">
+              He has spent much of his career thinking about how mathematics is taught, how it is learnt, and what is lost when the subject is reduced merely to mechanical algorithms. He has worked extensively in mathematical education, particularly in the training of students for mathematical Olympiads and premier competitive examinations.
+            </p>
+
+            <p class="text-sm sm:text-base text-neutral-300 leading-relaxed font-normal">
+              He has served as the <strong class="text-white">Head of the Olympiad Division at Vidyamandir Classes</strong> and has been associated with the <strong class="text-white">Centre of Excellence</strong>. He is also the author of <strong class="text-[#ebef70] font-mono">The Olympiad Companion: The Fine Art of Mathematical Mischief</strong> and is writing a series of problem books for students who wish to go beyond routine mathematics and develop a genuine, structural understanding of the discipline.
+            </p>
+
+
+
+            <div class="p-4 bg-white/10 border-2 border-dashed border-[#ebef70]/40 rounded-xl text-xs font-mono font-bold text-[#ebef70]">
+              deMath is a direct extension of that pedagogical philosophy.
+            </div>
+
+            <div class="pt-2 flex flex-wrap gap-3 font-mono text-xs">
+              <a 
+                href="/courses" 
+                class="px-4 py-2 bg-[#ebef70] text-[#2a2a2a] font-bold rounded-lg border-2 border-[#2a2a2a] shadow-[3px_3px_0px_#fff] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
+              >
+                Learn with Saad →
+              </a>
+              <a 
+                href="/resources" 
+                class="px-4 py-2 bg-white/10 text-white font-bold rounded-lg border-2 border-white/30 hover:bg-white/20 transition-all"
+              >
+                View Publications
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- WHAT DEMATH IS: CORE PRINCIPLES & PURPOSE OF THE VAULT -->
+      <section class="space-y-6">
+        <div data-reveal class="flex items-center justify-between border-b-[3px] border-[#2a2a2a] pb-3">
+          <h2 class="font-sketch section-heading font-semibold text-[#2a2a2a]">
+            The Purpose of the Vault
+          </h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+          <!-- Card 1: School System & Grassroots Dearth -->
+          <div data-reveal data-reveal-delay="0" class="p-6 sm:p-8 bg-white border-[3px] border-[#2a2a2a] rounded-2xl shadow-[6px_6px_0px_0px_#2a2a2a] space-y-3">
+            <div>
+              <span class="w-8 h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs">
+                01
+              </span>
+            </div>
+            <h3 class="card-heading font-bold text-[#2a2a2a]">Mathematics Education in India</h3>
+            <p class="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
+              A dearth of teachers capable of elevating mathematical thinking has produced an insistence on cramming endless formulae and algorithms. Students begin viewing mathematics as dependent on tricks for quick resolution, breeding resentment: <em>"Why must I cram so many things just to get the answer? Is that all there is to mathematics?"</em> until phobia takes root.
+            </p>
+          </div>
+
+          <!-- Card 2: The Coaching Trap -->
+          <div data-reveal data-reveal-delay="120" class="p-6 sm:p-8 bg-white border-[3px] border-[#2a2a2a] rounded-2xl shadow-[6px_6px_0px_0px_#2a2a2a] space-y-3">
+            <div>
+              <span class="w-8 h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs">
+                02
+              </span>
+            </div>
+            <h3 class="card-heading font-bold text-[#2a2a2a]">Out of the Pan into the Fire</h3>
+            <p class="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
+              When enthusiastic students enter coaching institutes, teachers often compound the error with harder questions under the same rote methodology. When a student encounters a problem outside the ambit of their memorised toolkit, progress collapses. High scores through hard work are not an endorsement of the method: volume is never a substitute for understanding.
+            </p>
+          </div>
+
+          <!-- Card 3: The Resisting Problem -->
+          <div data-reveal data-reveal-delay="0" class="p-6 sm:p-8 bg-white border-[3px] border-[#2a2a2a] rounded-2xl shadow-[6px_6px_0px_0px_#2a2a2a] space-y-3">
+            <div>
+              <span class="w-8 h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs">
+                03
+              </span>
+            </div>
+            <h3 class="card-heading font-bold text-[#2a2a2a]">The Problem That Fights Back</h3>
+            <p class="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
+              You learn more by sitting idly in the company of an unsolved problem that is not responding to your attacks than by swiftly razing through hordes of problems which reveal themselves at the first touch. Solving is at the heart of mathematics, but meditating over resisting problems is what builds insight: any problem worthy of an attack proves its worth by fighting back.
+            </p>
+          </div>
+
+          <!-- Card 4: Exploratory Trekking & First Principles -->
+          <div data-reveal data-reveal-delay="120" class="p-6 sm:p-8 bg-white border-[3px] border-[#2a2a2a] rounded-2xl shadow-[6px_6px_0px_0px_#2a2a2a] space-y-3">
+            <div>
+              <span class="w-8 h-8 rounded-lg bg-[#ebef70] border-2 border-[#2a2a2a] flex items-center justify-center font-mono font-black text-xs">
+                04
+              </span>
+            </div>
+            <h3 class="card-heading font-bold text-[#2a2a2a]">The Hiker on Uncharted Peaks</h3>
+            <p class="text-xs sm:text-sm text-neutral-600 leading-relaxed font-normal">
+              Like a hiker charting a treacherous peak who must invent new paths when terrain is novel, we do mathematics by taking a problem, twisting it, breaking it, and stripping it to its bare bones until we recognise the underlying structure, then piecing it back together. Mathematics is built on the back of first principles, and it begins where the toolkit ends.
+            </p>
+          </div>
+
+
+        </div>
+      </section>
+
+      <!-- THE UNDERLYING UNITY (PULLQUOTE BANNER) -->
+      <section data-reveal class="bg-[#2a2a2a] text-white border-[3px] border-[#2a2a2a] rounded-2xl p-8 sm:p-12 shadow-[8px_8px_0px_0px_#ebef70] space-y-6">
+        <div class="inline-block px-3 py-1 bg-[#ebef70] text-[#2a2a2a] font-mono text-[10px] font-bold uppercase tracking-widest rounded shadow-[2px_2px_0px_#ffffff]">
+          Saad Hassan on Mathematical Problem Solving
+        </div>
+
+        <blockquote class="text-lg sm:text-2xl font-bold leading-relaxed tracking-tight text-white/95 font-sans">
+          "Solving a large volume of problems and believing that this is a substitute for understanding is an illusion which is shattered at the first encounter with a non-routine problem. You learn more by sitting idly in the company of an unsolved problem that is not responding to your attacks than by swiftly razing through hordes of problems which reveal themselves at the first touch. Remember, any problem worthy of an attack proves its worth by fighting back."
+        </blockquote>
+
+        <div class="pt-4 border-t border-white/20 flex items-center justify-between font-mono text-xs text-neutral-300">
+          <span class="font-bold text-[#ebef70]">Saad Hassan</span>
+        </div>
+
+      </section>
+
+
+
+      <!-- FOOTER CTA -->
+      <section data-reveal class="border-t-[3px] border-[#2a2a2a] pt-8 flex flex-wrap items-center justify-center gap-4">
+        <a href="/problems" class="inline-flex items-center px-6 py-3 font-mono font-black text-xs uppercase tracking-wider bg-[#2a2a2a] text-white rounded-xl border-[3px] border-[#2a2a2a] shadow-[4px_4px_0px_0px_#8f8f8f] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#2a2a2a] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all">
+          Explore Problem Archive →
+        </a>
+        <a href="/techniques" class="inline-flex items-center px-6 py-3 font-mono font-black text-xs uppercase tracking-wider bg-white text-[#2a2a2a] rounded-xl border-[3px] border-[#2a2a2a] shadow-[4px_4px_0px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#2a2a2a] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all">
+          Learn Techniques →
+        </a>
+        <a href="/courses" class="inline-flex items-center px-6 py-3 font-mono font-black text-xs uppercase tracking-wider bg-[#ebef70] text-[#2a2a2a] rounded-xl border-[3px] border-[#2a2a2a] shadow-[4px_4px_0px_0px_#2a2a2a] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_#2a2a2a] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all">
+          Explore Courses →
+        </a>
+      </section>
+
+    </main>
+  </div>
+</Layout>
